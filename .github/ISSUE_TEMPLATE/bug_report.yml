@@ -1,0 +1,25 @@
+name: Bug report
+description: Something in the API does not work as documented.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal code to reproduce
+      render: dart
+  - type: input
+    id: version
+    attributes:
+      label: twin_screen and Flutter versions
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform and device

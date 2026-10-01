@@ -1,0 +1,18 @@
+# Internal planning documents.
+CLAUDE.md
+MVP_PLAN.md
+
+# Same as .gitignore.
+*.iml
+.idea/
+.dart_tool/
+.build/
+.swiftpm/
+build/
+/pubspec.lock
+android/local.properties
+example/android/local.properties
+example/build/
+example/ios/Pods/
+example/ios/Podfile.lock
+example/ios/Flutter/ephemeral/

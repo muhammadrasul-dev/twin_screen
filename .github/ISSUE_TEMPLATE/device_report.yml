@@ -1,0 +1,44 @@
+name: Device behaves differently
+description: The mode, posture, fold or layout is wrong on a device or emulator.
+labels: [device]
+body:
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      description: Model, or emulator profile.
+      placeholder: Galaxy Z Fold6, Pixel Fold emulator, iPhone Duo simulator...
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS version
+      placeholder: Android 15, iOS 27.1...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What you did
+      description: Opened, folded, rotated, entered split screen...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual result
+    validations:
+      required: true
+  - type: textarea
+    id: state
+    attributes:
+      label: Screen state
+      description: >-
+        Run the example app and attach a screenshot of the "Screen state" page
+        in the state that is wrong. It lists every value twin_screen computed.
+  - type: input
+    id: version
+    attributes:
+      label: twin_screen and Flutter versions
+      placeholder: twin_screen 0.1.0, Flutter 3.44.6

@@ -1,0 +1,65 @@
+name: twin_screen
+description: "Fold-aware and dual-screen layouts for Flutter: iPhone Duo, Android foldables and flip phones, and web, plus window size classes and a fold simulator."
+version: 0.1.0
+repository: https://github.com/muhammadrasul-dev/twin_screen
+issue_tracker: https://github.com/muhammadrasul-dev/twin_screen/issues
+documentation: https://github.com/muhammadrasul-dev/twin_screen/tree/main/doc
+topics:
+  - foldable
+  - dual-screen
+  - adaptive
+  - responsive
+  - layout
+
+screenshots:
+  - description: "Pixel Fold open flat: a list and its detail on the two sides of the fold (dualPane)."
+    path: doc/screenshots/pixel_fold_dual_pane.png
+  - description: "Pixel Fold half-open like a book: showFoldAwareDialog opens on the side that was tapped."
+    path: doc/screenshots/pixel_fold_book_dialog.png
+  - description: "Pixel Fold half-open in portrait: TwinPane splits top and bottom (tabletop)."
+    path: doc/screenshots/pixel_fold_tabletop.png
+  - description: "Pixel Fold closed: the app on the cover screen (cover)."
+    path: doc/screenshots/pixel_fold_cover.png
+  - description: "iPhone Duo on the cover screen, read through UIHingeInteraction (iOS 27.1)."
+    path: doc/screenshots/iphone_duo_cover.png
+  - description: "TwinDebugOverlay: the live info panel and the fold outline."
+    path: doc/screenshots/debug_panel.png
+  - description: "The fold simulator rendering the app as a half-open Galaxy Z Flip."
+    path: doc/screenshots/simulator_z_flip.png
+
+environment:
+  sdk: ^3.8.0
+  flutter: ">=3.32.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  web: ^1.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: io.github.muhammadrasul_dev.twin_screen
+        pluginClass: TwinScreenPlugin
+      ios:
+        pluginClass: TwinScreenPlugin
+      web:
+        pluginClass: TwinScreenWeb
+        fileName: twin_screen_web.dart
+      macos:
+        dartPluginClass: TwinScreenDesktop
+        dartFileName: src/platform/twin_screen_desktop.dart
+      windows:
+        dartPluginClass: TwinScreenDesktop
+        dartFileName: src/platform/twin_screen_desktop.dart
+      linux:
+        dartPluginClass: TwinScreenDesktop
+        dartFileName: src/platform/twin_screen_desktop.dart

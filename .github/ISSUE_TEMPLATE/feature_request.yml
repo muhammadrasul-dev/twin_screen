@@ -1,0 +1,16 @@
+name: Feature request
+description: A widget, device or API you would like to see.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What do you want to build?
+      description: Describe the layout or behaviour, and on which devices.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Proposed API (optional)
+      render: dart

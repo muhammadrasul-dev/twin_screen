@@ -1,0 +1,351 @@
+# twin_screen
+
+[![pub package](https://img.shields.io/pub/v/twin_screen.svg)](https://pub.dev/packages/twin_screen)
+[![CI](https://github.com/muhammadrasul-dev/twin_screen/actions/workflows/ci.yml/badge.svg)](https://github.com/muhammadrasul-dev/twin_screen/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/muhammadrasul-dev/twin_screen/blob/main/LICENSE)
+
+**One Flutter API for every foldable and dual-screen device**: iPhone Duo,
+Android book foldables, Android flip phones, Surface Duo and web browsers on
+foldable hardware. On ordinary phones, tablets and desktops it falls back to
+window size classes, so the same code adapts everywhere.
+
+| Open flat, list and detail | Half-open, dialog on one side | Half-open like a laptop | Folded, on the cover screen |
+|:---:|:---:|:---:|:---:|
+| ![Pixel Fold, dualPane](https://raw.githubusercontent.com/muhammadrasul-dev/twin_screen/main/doc/screenshots/pixel_fold_dual_pane.png) | ![Pixel Fold, book](https://raw.githubusercontent.com/muhammadrasul-dev/twin_screen/main/doc/screenshots/pixel_fold_book_dialog.png) | ![Pixel Fold, tabletop](https://raw.githubusercontent.com/muhammadrasul-dev/twin_screen/main/doc/screenshots/pixel_fold_tabletop.png) | ![Pixel Fold, cover](https://raw.githubusercontent.com/muhammadrasul-dev/twin_screen/main/doc/screenshots/pixel_fold_cover.png) |
+| `dualPane` | `book` | `tabletop` | `cover` |
+
+## Why twin_screen
+
+Foldables are no longer a niche: book foldables, flip phones and now iPhone Duo
+all put a hinge in the middle of your UI. Flutter exposes that hinge through
+`MediaQuery.displayFeatures`, but **only on Android**. On iOS and web the list
+is always empty, and even on Android it tells you nothing when the device is
+folded shut, nothing about the hinge angle, and nothing about whether you are
+on a book foldable or a flip phone.
+
+`twin_screen` closes those gaps:
+
+- **It reads the hinge on every platform.** Android gets the hinge sensor on
+  top of Flutter's fold data. iOS 27.1 gets `UIHingeInteraction` and the view's
+  reserved regions. Web gets the Viewport Segments and Device Posture APIs.
+- **It fills `MediaQuery.displayFeatures` where Flutter does not.** Flutter's
+  own fold-aware widgets (`DisplayFeatureSubScreen`,
+  `showDialog(anchorPoint:)`, popup menus) start working on iOS and web too,
+  without any change to your code.
+- **It turns raw data into decisions.** One `mode` tells you whether the app is
+  on an ordinary screen, folded on the cover screen, open on one side, spanning
+  flat, held like a book, or standing like a laptop.
+- **It gives you layouts that respect the hinge.** `TwinPane` splits at the
+  fold and never puts content under a physical hinge. `showFoldAwareDialog`
+  keeps dialogs on one side.
+- **It lets you build without the hardware.** `TwinDebugOverlay` draws the
+  fold over your app and simulates six real devices, on any phone, simulator,
+  desktop or browser.
+
+## Features at a glance
+
+| Feature | What it does | Guide |
+|---|---|---|
+| `TwinScreenScope` + `TwinScreen.of` | Device type, posture, hinge angle, hinge bounds, segments, window class and a combined `mode`. Widgets rebuild only for the part they read. | [Screen state](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/screen-state.md) |
+| `TwinPane` | Two panes split exactly at the fold, with window-class fallbacks on ordinary screens. | [TwinPane](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/twin-pane.md) |
+| `showFoldAwareDialog` | Dialogs that open on the side you tapped, or on a side you choose. | [Fold-aware dialog](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/fold-aware-dialog.md) |
+| `WindowClass` + `WindowClassBuilder` | Material 3 window size classes with custom breakpoints. | [Window classes](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/window-classes.md) |
+| `TwinDebugOverlay` | Draws the fold, shows a live info panel and simulates iPhone Duo, Galaxy Z Fold, Galaxy Z Flip, Pixel Fold, Surface Duo and Xiaomi Mix Flip. | [Debug overlay](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/debug-overlay.md) |
+| MediaQuery injection | Flutter's own fold-aware widgets work on iOS and web. | [Platforms](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/platforms.md) |
+
+## Installation
+
+```sh
+flutter pub add twin_screen
+```
+
+| Requirement | Version |
+|---|---|
+| Flutter | 3.32 or later |
+| Android | API 24+ (hinge sensor needs API 30+) |
+| iOS | 15.0+ (hinge API needs iOS 27.1 at run time) |
+
+No permissions and no platform setup are needed.
+
+## Quick start
+
+Wrap your app in `TwinScreenScope`. While developing, also wrap it in
+`TwinDebugOverlay`; it switches itself off in release builds.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:twin_screen/twin_screen.dart';
+
+void main() {
+  runApp(
+    const TwinScreenScope(
+      child: TwinDebugOverlay(child: MyApp()),
+    ),
+  );
+}
+```
+
+Then put a list and its detail on the two sides of the fold:
+
+```dart
+class InboxPage extends StatelessWidget {
+  const InboxPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const TwinPane(
+      start: MessageList(), // left of the fold (right in RTL, top if the fold is horizontal)
+      end: MessageView(),   // the other side
+    );
+  }
+}
+```
+
+On an ordinary phone `TwinPane` shows only the list. On a tablet or an
+unfolded foldable it shows both, split exactly at the fold.
+
+## The screen state
+
+`TwinScreen.of(context)` returns a `TwinScreenData`. Its `mode` is the single
+answer to "how is my app being shown right now?":
+
+| `mode` | When | Typical layout |
+|---|---|---|
+| `standard` | An ordinary phone, tablet, desktop or browser | Your usual responsive layout |
+| `cover` | A foldable is closed and the app is on the outer screen | Compact, one column |
+| `singlePane` | The device is open but the app uses one side (split screen, one panel of a Duo) | Compact, as on a phone |
+| `dualPane` | The app spans a device that is open flat | List and detail on the two sides |
+| `book` | The app spans a half-open device with a vertical fold | Two pages, like a book |
+| `tabletop` | The app spans a half-open device with a horizontal fold | Content on top, controls below |
+
+```dart
+final screen = TwinScreen.of(context);
+
+return switch (screen.mode) {
+  TwinScreenMode.tabletop => VideoWithControlsBelow(),
+  TwinScreenMode.book || TwinScreenMode.dualPane => ListAndDetail(),
+  _ => PhoneLayout(),
+};
+```
+
+`mode` is built from separate fields, which you can use directly when you need
+more detail:
+
+| Field | Meaning |
+|---|---|
+| `deviceType` | The hardware: `standard`, `foldable` (book style), `flip`, `dualScreen` or `unknown`. It does not change when the device is folded. |
+| `posture` | The hinge right now: `closed`, `halfOpened`, `flat` or `unknown` |
+| `isSpanned` | Whether the app window crosses the fold |
+| `hinge` | The fold's bounds and axis, whether it separates the window (`isSeparating`) and whether it hides content (`occludesContent`), or null |
+| `hingeAngle` | Degrees, from 0 (shut) to 180 (flat), or null without a hinge sensor |
+| `segments` | The usable rectangles on each side of the hinge, ordered start to end |
+| `windowClass` | Material 3 width and height classes |
+| `source` | Where the fold came from: `flutter`, `plugin`, `simulator` or `fallback` |
+
+Each field has a reader that rebuilds your widget **only when that field
+changes**, so a widget that reads the mode is not rebuilt 60 times a second
+while the user opens the hinge:
+
+```dart
+TwinScreen.modeOf(context);              // rebuilds when the mode changes
+TwinScreen.postureOf(context);           // ... when the posture changes
+TwinScreen.hingeAngleOf(context);        // ... on every angle change
+TwinScreen.hingeAngleStreamOf(context);  // a Stream<double?>, no rebuilds at all
+```
+
+Read more in the [screen state guide](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/screen-state.md).
+
+## TwinPane
+
+`TwinPane` places two widgets on the two sides of the fold. It follows three
+rules, in order:
+
+1. **A hinge that separates the window** (a half-open fold, or a physical
+   hinge like Surface Duo's) splits the panes exactly at the hinge. Nothing is
+   ever placed under it.
+2. **A flat fold** lines the split up with the fold when the window is medium
+   or wider, so the seam of the screen and the seam of your layout coincide.
+3. **No fold at all**: `fallback` decides. By default a compact window shows
+   only `start`, and medium or expanded windows show both side by side.
+
+```dart
+TwinPane(
+  start: const ProductGrid(),
+  end: const Cart(),
+  fallback: TwinPaneFallback.windowClass, // or startOnly, endOnly, sideBySide, stacked
+  fallbackRatio: 0.4,                     // start gets 40% when there is no fold to follow
+)
+```
+
+Each pane receives a `MediaQuery` with only its own safe-area padding and
+display features, so `SafeArea` and nested fold-aware widgets inside a pane
+behave correctly. `TwinPane` measures its own position, so it also works below
+an `AppBar`, inside a `Scaffold` body or in any other layout.
+
+Read more in the [TwinPane guide](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/twin-pane.md).
+
+## Fold-aware dialog
+
+A dialog centred on a spanned screen lands right on the fold.
+`showFoldAwareDialog` works like `showDialog`, but keeps the dialog on one side:
+
+```dart
+GestureDetector(
+  onTapDown: (details) => showFoldAwareDialog<void>(
+    context: context,
+    anchorPoint: details.globalPosition, // open on the side the user tapped
+    builder: (context) => const AlertDialog(title: Text('Delete this message?')),
+  ),
+  child: const Text('Delete'),
+)
+```
+
+- With an `anchorPoint`, it opens on the side that holds that point.
+- Without one, it uses `preferredSide` (`TwinPaneSide.start` by default).
+- `allowSpanning: true` lets a large dialog cover both sides.
+
+`FoldAwareDialog` applies the same placement to any widget, for custom routes
+and overlays.
+
+Read more in the [fold-aware dialog guide](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/fold-aware-dialog.md).
+
+## Window classes
+
+Material 3 window size classes, so one layout decision covers phones, tablets,
+desktops and unfolded foldables alike:
+
+| Class | Width | Height |
+|---|---|---|
+| compact | < 600 | < 480 |
+| medium | 600–839 | 480–899 |
+| expanded | ≥ 840 | ≥ 900 |
+
+```dart
+WindowClassBuilder(
+  compact: (context) => const BottomNavigationLayout(),
+  medium: (context) => const NavigationRailLayout(),
+  expanded: (context) => const NavigationDrawerLayout(),
+)
+
+if (WindowClass.of(context).width >= WindowWidthClass.medium) {
+  // two columns
+}
+```
+
+Only `compact` is required: `medium` falls back to `compact`, and `expanded`
+falls back to `medium`. Change the breakpoints for the whole app with
+`TwinScreenScope(breakpoints: WindowClassBreakpoints(mediumWidth: 640))`.
+
+Read more in the [window classes guide](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/window-classes.md).
+
+## Debug overlay and fold simulator
+
+| Live info panel on a real Pixel Fold | Simulating a half-open Galaxy Z Flip |
+|:---:|:---:|
+| ![Debug panel](https://raw.githubusercontent.com/muhammadrasul-dev/twin_screen/main/doc/screenshots/debug_panel.png) | ![Simulator](https://raw.githubusercontent.com/muhammadrasul-dev/twin_screen/main/doc/screenshots/simulator_z_flip.png) |
+
+`TwinDebugOverlay` adds a small round button over your app. Its draggable
+panel shows the mode, device type, posture, hinge angle, window class, size,
+platform and data source, and it outlines the segments, the hinge and camera
+cutouts on top of your UI.
+
+Turn on the **fold simulator** and your app is rendered at the exact logical
+size of a real device, with a faked `MediaQuery` and platform report. Switch
+the device, the posture (closed, half-open, flat), the hinge angle, the
+orientation and whether the app spans both sides or only one. Your app keeps
+its state while you switch.
+
+| Preset | Kind | Inner screen | Cover screen |
+|---|---|---|---|
+| iPhone Duo | book | 951 × 669 pt | 386 × 678 pt app window |
+| Galaxy Z Fold | book | 707 × 823 dp | 369 × 905 dp |
+| Galaxy Z Flip | flip | 411 × 1006 dp | 360 × 374 dp |
+| Pixel Fold | book | 841 × 701 dp | 411 × 797 dp |
+| Surface Duo | two panels | 1114 × 720 dp, 34 dp hinge | none |
+| Xiaomi Mix Flip | flip | 445 × 1059 dp | 439 × 506 dp |
+
+The overlay is off in release builds. Pass `enabled: true` to keep it, for
+example in an internal QA build.
+
+Read more in the [debug overlay guide](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/debug-overlay.md).
+
+## Platform support
+
+| Platform | Fold bounds | Posture | Hinge angle | Cover screen | Device type |
+|---|---|---|---|---|---|
+| Android | ✅ Flutter (Jetpack WindowManager) | ✅ hinge sensor + fold state | ✅ `TYPE_HINGE_ANGLE` | ✅ | ✅ sensor, fold axis and rotation |
+| iOS 27.1+ | 🧪 reserved regions | 🧪 `UIHinge.status` | 🧪 `UIHinge.angle` | ✅ | ✅ |
+| Web | ✅ Viewport Segments API | ✅ Device Posture API | – | – | ✅ from segments |
+| macOS, Windows, Linux | – | – | – | – | `standard` |
+
+✅ verified on emulators or simulators · 🧪 preview
+
+> **iPhone Duo preview.** The cover-screen state and the hardware check are
+> verified in the iOS 27.1 simulator. The open and half-open states (fold
+> bounds, posture and angle) are implemented against the iOS 27.1 runtime but
+> have not yet been confirmed on an unfolded device. Please
+> [open an issue](https://github.com/muhammadrasul-dev/twin_screen/issues) with
+> the "Screen state" page of the example app if anything looks wrong.
+
+On iOS the hinge API is reached through the Objective-C runtime, so the plugin
+builds with any Xcode, including versions whose SDK predates iOS 27.1, and
+reports an ordinary device where the API is missing.
+
+Platform details, emulator setup and known quirks are in the
+[platforms guide](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/platforms.md).
+
+## Testing your widgets
+
+You do not need a foldable to test fold-aware code. Give the scope a fake
+platform report, or take one from a device preset:
+
+```dart
+testWidgets('the cart sits on the end side of the fold', (tester) async {
+  final screen = TwinSimulatedScreen.resolve(
+    preset: TwinDevicePreset.galaxyZFold,
+    posture: TwinPosture.halfOpened,
+    hingeAngle: 110,
+    orientation: Orientation.portrait,
+    span: TwinSimulatedSpan.both,
+  );
+  tester.view.physicalSize = screen.size;
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
+
+  await tester.pumpWidget(
+    TwinScreenScope(
+      platformOverride: screen.platform.copyWith(displayFeatures: screen.displayFeatures),
+      child: const MyApp(),
+    ),
+  );
+
+  expect(tester.getTopLeft(find.byType(Cart)).dx, greaterThanOrEqualTo(353.5));
+});
+```
+
+Read more in the [testing guide](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/testing.md).
+
+## Documentation
+
+- [Getting started](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/getting-started.md)
+- [Screen state](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/screen-state.md)
+- [TwinPane](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/twin-pane.md)
+- [Fold-aware dialog](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/fold-aware-dialog.md)
+- [Window classes](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/window-classes.md)
+- [Debug overlay and simulator](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/debug-overlay.md)
+- [Platforms](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/platforms.md)
+- [Testing](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/testing.md)
+- [FAQ and troubleshooting](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/faq.md)
+- [API reference](https://pub.dev/documentation/twin_screen/latest/)
+
+The [example app](https://github.com/muhammadrasul-dev/twin_screen/tree/main/example)
+shows every feature on one screen.
+
+## Contributing
+
+Bug reports from real devices are especially welcome. See
+[CONTRIBUTING.md](https://github.com/muhammadrasul-dev/twin_screen/blob/main/CONTRIBUTING.md).
+
+## License
+
+MIT. See [LICENSE](https://github.com/muhammadrasul-dev/twin_screen/blob/main/LICENSE).
