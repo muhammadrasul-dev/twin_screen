@@ -8,26 +8,32 @@ on:
 
 jobs:
   check:
-    name: Analyze and test (Flutter ${{ matrix.flutter }})
+    name: Analyze and test (Flutter ${{ matrix.label }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # The oldest supported version and the current stable release.
-        flutter: ['3.32.x', 'stable']
+        include:
+          # The oldest supported version and the latest stable release.
+          - label: '3.32, minimum'
+            flutter: '3.32.x'
+            latest: false
+          - label: 'latest stable'
+            flutter: '3.x'
+            latest: true
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: ${{ matrix.flutter == 'stable' && '' || matrix.flutter }}
+          flutter-version: ${{ matrix.flutter }}
           cache: true
       - run: flutter pub get
       - name: Format
-        if: matrix.flutter == 'stable'
+        if: matrix.latest
         run: dart format --output=none --set-exit-if-changed .
       - name: Analyze
-        if: matrix.flutter == 'stable'
+        if: matrix.latest
         run: flutter analyze
       - name: Test
         run: flutter test
@@ -35,7 +41,7 @@ jobs:
         working-directory: example
         run: flutter test
       - name: Publish dry run
-        if: matrix.flutter == 'stable'
+        if: matrix.latest
         run: dart pub publish --dry-run
 
   android:
