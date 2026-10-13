@@ -19,7 +19,7 @@
   - [ ] Ochiq / yarim buklangan holatni iPhone Duo'da tekshirish (simulyatorda hinge'ni qo'lda ochish kerak)
 - [x] 8-bosqich: web (Viewport Segments) va desktop
 - [x] 9-bosqich: example app, README, CHANGELOG 0.1.0, testlar, `.pubignore`, `pub publish --dry-run` (0 warning)
-- [ ] **10-bosqich: nashr** ← hozir shu yerda (sizning ruxsatingiz kerak)
+- [x] 10-bosqich: nashr — GitHub `main` + pub.dev `0.1.0` (2026-10-13). Nashrdan oldin: holat yo'qolishi buglari tuzatildi, Flutter 3.32 / AGP 8 / minSdk 21 qo'llab-quvvatlandi, README qayta yozildi, `doc/ai-agents.md` qo'shildi
 
 ---
 
