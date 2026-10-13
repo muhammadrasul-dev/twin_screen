@@ -149,6 +149,8 @@ For the lowest level, replace the platform implementation itself and push
 states by hand:
 
 ```dart
+import 'dart:async';
+
 import 'package:twin_screen/twin_screen_platform_interface.dart';
 
 class FakeTwinPlatform extends TwinScreenPlatform {

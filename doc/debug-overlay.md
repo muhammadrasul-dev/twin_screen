@@ -132,6 +132,8 @@ Each property can also be set on its own.
 ## Options
 
 ```dart
+import 'package:flutter/foundation.dart'; // kReleaseMode
+
 TwinDebugOverlay(
   enabled: !kReleaseMode,      // default: on in debug and profile, off in release
   controller: null,            // your own TwinSimulatorController
@@ -142,7 +144,8 @@ TwinDebugOverlay(
 )
 ```
 
-When `enabled` is false the overlay returns your app unchanged, with no cost.
+When `enabled` is false the overlay draws nothing and adds no button; only
+a tiny wrapper stays, so the app keeps its state if you turn it on later.
 Set `enabled: true` to keep it in a release build, for example for internal
 testers. Set `showPanel: false` to drive the simulator from code only.
 

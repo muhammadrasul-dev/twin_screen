@@ -103,7 +103,10 @@ class TwinScreenPlugin :
             "rememberDeviceType" -> {
                 val type = call.arguments as? String
                 if (type != null && type in REMEMBERED_TYPES) {
-                    prefs.edit().putString(KEY_DEVICE_TYPE, type).apply()
+                    prefs.edit()
+                        .putString(KEY_DEVICE_TYPE, type)
+                        .putString(KEY_DEVICE_MODEL, deviceModel())
+                        .apply()
                     emitIfChanged()
                 }
                 result.success(null)
@@ -253,7 +256,7 @@ class TwinScreenPlugin :
         ) {
             return "dualScreen"
         }
-        prefs.getString(KEY_DEVICE_TYPE, null)?.let { return it }
+        rememberedType()?.let { return it }
         if (!hasHinge()) return "standard"
         val (shortest, longest) = screenSizeDp() ?: return openGuess ?: "foldable"
         val ratio = longest / shortest
@@ -267,6 +270,18 @@ class TwinScreenPlugin :
         if (shortest > MAX_COVER_SHORTEST_DP) return "foldable"
         return if (ratio < COVER_FLIP_RATIO) "flip" else "foldable"
     }
+
+    /**
+     * The type Dart learned from a fold on this very device. The value is tied
+     * to the device model, because Android Auto Backup restores
+     * SharedPreferences onto a new phone.
+     */
+    private fun rememberedType(): String? {
+        if (prefs.getString(KEY_DEVICE_MODEL, null) != deviceModel()) return null
+        return prefs.getString(KEY_DEVICE_TYPE, null)
+    }
+
+    private fun deviceModel(): String = "${Build.MANUFACTURER}/${Build.MODEL}"
 
     /** The whole screen the app is on, in dp: (shortest side, longest side). */
     private fun screenSizeDp(): Pair<Double, Double>? {
@@ -303,6 +318,7 @@ class TwinScreenPlugin :
     companion object {
         private const val PREFS = "io.github.muhammadrasul_dev.twin_screen"
         private const val KEY_DEVICE_TYPE = "deviceType"
+        private const val KEY_DEVICE_MODEL = "deviceModel"
         private val REMEMBERED_TYPES = setOf("foldable", "flip", "dualScreen")
 
         /** Hinge angles below this count as closed, matching the Dart simulator. */

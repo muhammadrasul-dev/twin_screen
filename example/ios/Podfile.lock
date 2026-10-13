@@ -2,7 +2,7 @@ PODS:
   - Flutter (1.0.0)
   - integration_test (0.0.1):
     - Flutter
-  - twin_screen (0.0.1):
+  - twin_screen (0.1.0):
     - Flutter
 
 DEPENDENCIES:
@@ -19,9 +19,9 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/twin_screen/ios"
 
 SPEC CHECKSUMS:
-  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
   integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
-  twin_screen: 403558db1d9078b263468010177241b0e43cc7f2
+  twin_screen: bb92342cbd65d82e4fa08bc556101d533c6eeffb
 
 PODFILE CHECKSUM: 73c627cf40d1e98d0566b7e312f2c4db3222ef22
 

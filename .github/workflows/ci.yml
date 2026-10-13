@@ -64,6 +64,30 @@ jobs:
         working-directory: example/android
         run: ./gradlew :twin_screen:testDebugUnitTest
 
+  android-minimum:
+    name: Android build (Flutter 3.32, AGP 8)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.32.x'
+          cache: true
+      # A fresh app from the 3.32 template, with its own (older) Android
+      # Gradle Plugin and the default minSdk.
+      - name: Create an app
+        run: flutter create --platforms android "$RUNNER_TEMP/compat"
+      - name: Build APK
+        working-directory: ${{ runner.temp }}/compat
+        run: |
+          flutter pub add twin_screen --path "$GITHUB_WORKSPACE"
+          flutter build apk --debug
+
   ios:
     name: iOS build
     runs-on: macos-latest

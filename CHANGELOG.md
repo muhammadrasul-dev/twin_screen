@@ -27,5 +27,11 @@ First release.
 * Web: Viewport Segments and Device Posture APIs.
 * macOS, Windows and Linux: an ordinary device; window classes and the
   simulator still work.
+* The app below the scope, and each `TwinPane` pane, keep their state when the
+  device folds or unfolds.
 * Guides in `doc/`, screenshots, and an example app covering every feature.
-* Requires Flutter 3.32 or later.
+* A guide for AI coding agents (`doc/ai-agents.md`): a rules block to paste
+  into `CLAUDE.md`, `AGENTS.md`, Cursor or Copilot instructions, prompts that
+  work well, and the mistakes agents make most often.
+* Requires Flutter 3.32 or later. Android: API 21+, with Android Gradle
+  Plugin 8 or 9 (built-in Kotlin or the Kotlin plugin).

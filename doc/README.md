@@ -13,6 +13,7 @@ read the guide for the feature you need.
 | [Debug overlay and simulator](debug-overlay.md) | See the fold, and try every foldable without owning one |
 | [Platforms](platforms.md) | Know what each platform reports, set up emulators, and understand known quirks |
 | [Testing](testing.md) | Write widget tests for fold-aware code |
+| [Using with AI coding agents](ai-agents.md) | Give Claude Code, Cursor, Copilot and other agents the rules for writing fold-aware code |
 | [FAQ and troubleshooting](faq.md) | Fix common surprises |
 
 The API reference is on

@@ -64,6 +64,9 @@ public class TwinScreenPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
   {
     sink = events
     lastSent = nil
+    // A new listener (for example after a hot restart, or in an add-to-app
+    // host that shows Flutter late) gets a fresh set of attach attempts.
+    attachAttempts = 0
     attachIfNeeded()
     emitIfChanged()
     return nil
@@ -94,6 +97,8 @@ public class TwinScreenPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
       }
       return
     }
+    // The previous view, if any, is gone: release what was attached to it.
+    detach()
     view = flutterView
     boundsObservation = flutterView.layer.observe(\.bounds, options: [.new]) { [weak self] _, _ in
       DispatchQueue.main.async { self?.emitIfChanged() }

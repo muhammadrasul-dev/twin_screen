@@ -234,6 +234,32 @@ void main() {
     expect(endQuery.displayFeatures, isEmpty);
   });
 
+  testWidgets('the start pane keeps its state when the split appears', (WidgetTester tester) async {
+    setWindowSize(tester, const Size(800, 600));
+    final FakeTwinPlatform fake = useFakePlatform();
+    int created = 0;
+    await tester.pumpWidget(
+      TwinScreenScope(
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: TwinPane(
+            fallback: TwinPaneFallback.startOnly,
+            start: StateProbe(onCreate: () => created++),
+            end: const SizedBox.expand(key: endKey),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.byKey(endKey), findsNothing);
+    fake.emit(bookState());
+    await tester.pump();
+    await tester.pump();
+    await tester.pump();
+    expect(find.byKey(endKey), findsOneWidget);
+    expect(created, 1);
+  });
+
   test('TwinPaneRects ignores a hinge outside the region', () {
     final TwinPaneRects rects = TwinPaneRects.resolve(
       region: const Rect.fromLTWH(0, 0, 400, 600),

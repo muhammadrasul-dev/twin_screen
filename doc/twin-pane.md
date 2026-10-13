@@ -67,8 +67,10 @@ Each pane gets its own `MediaQuery`, built with Flutter's
 - **Padding**: only the safe-area insets on the pane's own edges. The left pane
   keeps the left inset and loses the right one, and so on. `SafeArea` inside a
   pane does the right thing.
-- **Display features**: only the features inside the pane. A nested
-  `TwinPane`, `DisplayFeatureSubScreen` or dialog inside a pane sees no fold.
+- **Display features**: only the features inside the pane, so Flutter's
+  `DisplayFeatureSubScreen` inside a pane sees no fold. (A nested `TwinPane`
+  or `FoldAwareDialog` reads the hinge from the scope instead; it ignores the
+  fold because the fold does not cross its own space.)
 
 The `MediaQuery` size is left unchanged, as in Flutter's own
 `DisplayFeatureSubScreen`. Use a `LayoutBuilder` inside a pane if you need its
@@ -123,7 +125,7 @@ return mode == TwinScreenMode.tabletop
 
 ```dart
 TwinPane(
-  start: const Map(),
+  start: const MapView(),
   end: const PlaceDetails(),
   fallback: TwinPaneFallback.stacked,
   fallbackRatio: 0.6,
@@ -134,8 +136,8 @@ TwinPane(
 
 ```dart
 TwinPane(
-  start: Page(number: page),
-  end: Page(number: page + 1),
+  start: BookPage(number: page),
+  end: BookPage(number: page + 1),
   fallback: TwinPaneFallback.startOnly,
 )
 ```

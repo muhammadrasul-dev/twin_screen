@@ -122,7 +122,8 @@ of the debug overlay, turn on **Fold simulator**, and pick a device:
 
 - **Galaxy Z Fold, half-open**: the panes split at the fold (`book`).
 - **Galaxy Z Flip, half-open**: list on top, detail below (`tabletop`).
-- **Any foldable, closed**: the app moves to the cover screen (`cover`).
+- **Any foldable with a cover screen, closed**: the app moves to the cover
+  screen (`cover`). Surface Duo has no cover screen, so it cannot close.
 
 See the [debug overlay guide](debug-overlay.md) for everything the simulator
 can do.
@@ -133,3 +134,5 @@ can do.
 - Use [window classes](window-classes.md) for navigation that adapts to every
   screen size.
 - Write [widget tests](testing.md) for your fold-aware layouts.
+- Working with an AI coding agent? Give it the rules in
+  [Using with AI coding agents](ai-agents.md).

@@ -25,6 +25,14 @@ plugins {
     id("com.android.library")
 }
 
+// AGP 9 compiles Kotlin itself. Apps on older AGP versions (Flutter before
+// 3.44), or with built-in Kotlin turned off, need the Kotlin plugin.
+if (com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.substringBefore('.').toInt() < 9 ||
+    findProperty("android.builtInKotlin")?.toString() == "false"
+) {
+    apply(plugin = "org.jetbrains.kotlin.android")
+}
+
 android {
     namespace = "io.github.muhammadrasul_dev.twin_screen"
 
@@ -45,7 +53,7 @@ android {
     }
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 21
     }
 
     testOptions {
@@ -65,10 +73,8 @@ android {
     }
 }
 
-kotlin {
-    compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
-    }
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
 }
 
 dependencies {

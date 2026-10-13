@@ -99,9 +99,13 @@ class TwinPane extends StatelessWidget {
     if (mediaQuery != null) {
       final Rect screen = Offset.zero & mediaQuery.size;
       final Rect clipped = rect.intersect(screen);
-      if (!clipped.isEmpty && clipped != screen) {
-        pane = MediaQuery(data: mediaQuery.removeDisplayFeatures(clipped), child: pane);
-      }
+      // Always wrapped, so a pane keeps its state when the split appears.
+      pane = MediaQuery(
+        data: !clipped.isEmpty && clipped != screen
+            ? mediaQuery.removeDisplayFeatures(clipped)
+            : mediaQuery,
+        child: pane,
+      );
     }
     return Positioned.fromRect(key: key, rect: rect.shift(-region.topLeft), child: pane);
   }

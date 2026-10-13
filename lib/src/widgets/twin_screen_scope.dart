@@ -266,20 +266,23 @@ class _TwinScreenScopeState extends State<TwinScreenScope> {
       unawaited(TwinScreenPlatform.instance.rememberDeviceType(data.deviceType));
     }
 
-    Widget result = _TwinScreenModel(
-      data: data,
-      breakpoints: widget.breakpoints,
-      angles: _angles,
-      child: widget.child,
+    // Always wrap in a MediaQuery, even when nothing is injected: adding or
+    // removing the wrapper when a fold appears would rebuild the whole app
+    // from scratch and lose its state.
+    final bool inject =
+        widget.injectDisplayFeatures &&
+        !listEquals<DisplayFeature>(data.displayFeatures, mediaQuery.displayFeatures);
+    return TwinRoot(
+      child: MediaQuery(
+        data: inject ? mediaQuery.copyWith(displayFeatures: data.displayFeatures) : mediaQuery,
+        child: _TwinScreenModel(
+          data: data,
+          breakpoints: widget.breakpoints,
+          angles: _angles,
+          child: widget.child,
+        ),
+      ),
     );
-    if (widget.injectDisplayFeatures &&
-        !listEquals<DisplayFeature>(data.displayFeatures, mediaQuery.displayFeatures)) {
-      result = MediaQuery(
-        data: mediaQuery.copyWith(displayFeatures: data.displayFeatures),
-        child: result,
-      );
-    }
-    return TwinRoot(child: result);
   }
 
   Widget _buildNested(BuildContext context) {
@@ -316,9 +319,21 @@ class _AngleSource {
     if (!_changes.isClosed) _changes.add(angle);
   }
 
-  Stream<double?> stream() async* {
-    yield _value;
-    yield* _changes.stream;
+  /// The current value, then every change. Subscribes to changes in the same
+  /// step as it emits the current value, so no change is missed in between.
+  Stream<double?> stream() {
+    StreamSubscription<double?>? changes;
+    late final StreamController<double?> controller;
+    controller = StreamController<double?>(
+      onListen: () {
+        controller.add(_value);
+        changes = _changes.stream.listen(controller.add, onDone: controller.close);
+      },
+      onPause: () => changes?.pause(),
+      onResume: () => changes?.resume(),
+      onCancel: () => changes?.cancel(),
+    );
+    return controller.stream;
   }
 
   void close() => unawaited(_changes.close());

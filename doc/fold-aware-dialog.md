@@ -72,7 +72,7 @@ Navigator.of(context).push(
   PageRouteBuilder<void>(
     opaque: false,
     barrierDismissible: true,
-    pageBuilder: (context, _, __) => const FoldAwareDialog(
+    pageBuilder: (context, _, _) => const FoldAwareDialog(
       preferredSide: TwinPaneSide.end,
       child: Center(child: MyPopover()),
     ),

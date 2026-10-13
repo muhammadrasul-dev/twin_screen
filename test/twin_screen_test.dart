@@ -246,6 +246,52 @@ void main() {
       expect(angles, <double?>[100, 130]);
     });
 
+    testWidgets('keeps the app state when the platform starts reporting a fold', (
+      WidgetTester tester,
+    ) async {
+      setWindowSize(tester, const Size(800, 600));
+      final FakeTwinPlatform fake = useFakePlatform();
+      int created = 0;
+      await tester.pumpWidget(TwinScreenScope(child: StateProbe(onCreate: () => created++)));
+      fake.emit(
+        const TwinPlatformState(deviceType: TwinDeviceType.foldable, posture: TwinPosture.closed),
+      );
+      await tester.pump();
+      await tester.pump();
+      fake.emit(bookState());
+      await tester.pump();
+      await tester.pump();
+      expect(MediaQuery.of(tester.element(find.byType(StateProbe))).displayFeatures, hasLength(1));
+      expect(created, 1);
+    });
+
+    testWidgets('hingeAngleStreamOf does not miss a change right after listening', (
+      WidgetTester tester,
+    ) async {
+      setWindowSize(tester, const Size(800, 600));
+      final FakeTwinPlatform fake = useFakePlatform();
+      late BuildContext context;
+      await tester.pumpWidget(
+        TwinScreenScope(
+          child: Builder(
+            builder: (BuildContext c) {
+              context = c;
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
+      fake.emit(bookState());
+      await tester.pump();
+      await tester.pump();
+      final List<double?> angles = <double?>[];
+      TwinScreen.hingeAngleStreamOf(context).listen(angles.add);
+      fake.emit(bookState(angle: 120));
+      await tester.pump();
+      await tester.pump();
+      expect(angles, <double?>[100, 120]);
+    });
+
     testWidgets('a nested scope applies its own breakpoints', (WidgetTester tester) async {
       setWindowSize(tester, const Size(700, 600));
       late WindowClass outer;

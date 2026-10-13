@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:twin_screen/twin_screen_platform_interface.dart';
 
@@ -66,3 +67,27 @@ TwinPlatformState bookState({double width = 800, double height = 600, double? an
       displayFeatures: <DisplayFeature>[verticalFold(width / 2, height)],
       source: TwinDataSource.plugin,
     );
+
+/// Counts how many times its state is created, to catch subtrees that are
+/// rebuilt from scratch.
+class StateProbe extends StatefulWidget {
+  /// Creates a probe that reports each new state to [onCreate].
+  const StateProbe({super.key, required this.onCreate});
+
+  /// Called from `initState`.
+  final VoidCallback onCreate;
+
+  @override
+  State<StateProbe> createState() => _StateProbeState();
+}
+
+class _StateProbeState extends State<StateProbe> {
+  @override
+  void initState() {
+    super.initState();
+    widget.onCreate();
+  }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.expand();
+}

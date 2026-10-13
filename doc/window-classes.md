@@ -43,12 +43,12 @@ if (WindowClass.of(context).width >= WindowWidthClass.medium) {
 }
 ```
 
-`WindowClass.of` rebuilds your widget only when the class changes, not on
-every resize. That matters on desktop and web, where the window is resized
-continuously.
+Under a `TwinScreenScope`, `WindowClass.of` rebuilds your widget only when the
+class changes, not on every resize. That matters on desktop and web, where the
+window is resized continuously.
 
-Without a `TwinScreenScope`, `WindowClass.of` falls back to `MediaQuery` and
-the Material 3 breakpoints.
+Without a scope, `WindowClass.of` falls back to `MediaQuery.sizeOf` and the
+Material 3 breakpoints, so it rebuilds on every resize.
 
 ## WindowClassBuilder
 
@@ -110,7 +110,8 @@ Window classes and the fold work together:
 
 - `TwinPane`'s default fallback is by window class: compact shows one pane,
   wider windows show two.
-- A flat fold splits `TwinPane` only on medium or wider windows.
+- With the default fallback, a flat fold splits `TwinPane` only on medium or
+  wider windows.
 - When a foldable reports no posture, a compact window is treated as the cover
   screen.
 

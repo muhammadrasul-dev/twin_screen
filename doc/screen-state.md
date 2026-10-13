@@ -35,7 +35,7 @@ mode ──────── one combined answer
 | `standard` | ordinary | any | no | – |
 | `cover` | foldable | closed | no | – |
 | `singlePane` | foldable | flat or half-open | no | – |
-| `dualPane` | any | flat | yes | any |
+| `dualPane` | any | flat or unknown | yes | any |
 | `book` | any | half-open | yes | vertical |
 | `tabletop` | any | half-open | yes | horizontal |
 
@@ -121,8 +121,8 @@ half-open.
 |---|---|
 | `bounds` | The rectangle of the fold, in logical pixels, in the window's coordinate space. A fold has zero width; a physical hinge has the width of the gap. |
 | `axis` | `vertical` (splits left and right) or `horizontal` (splits top and bottom) |
-| `isSeparating` | Whether the two sides should show separate content: true for a half-open fold and for any physical hinge |
-| `occludesContent` | Whether content under `bounds` is invisible: true for a physical hinge at least 1 logical pixel wide |
+| `isSeparating` | Whether the two sides should show separate content: true when the fold is half-open or when it occludes content |
+| `occludesContent` | Whether content under `bounds` is invisible: true when the fold or hinge is at least 1 logical pixel wide (Surface Duo's hinge, a gap between web segments). A zero-width fold never occludes. |
 | `isPhysicalHinge` | A hinge between two panels rather than a fold in one screen |
 | `type`, `state` | The raw Flutter `DisplayFeatureType` and `DisplayFeatureState` |
 
@@ -181,9 +181,9 @@ Where the fold information came from. Useful when debugging:
 | Value | Meaning |
 |---|---|
 | `flutter` | Flutter reported the fold itself (Android) |
-| `plugin` | `twin_screen` read it from the platform (iOS, web, or the hinge sensor) |
+| `plugin` | `twin_screen` read it from the native side or the browser (Android hinge sensor, iOS, web). Ordinary Android and iOS phones also report `plugin`. |
 | `simulator` | The fold simulator or a test override |
-| `fallback` | No fold information is available on this platform |
+| `fallback` | No native side answered: desktop, widget tests without an override, or no scope |
 
 ## Reading the state efficiently
 
@@ -203,12 +203,17 @@ WindowClass.of(context);          // WindowClass
 ```
 
 Each of these rebuilds the caller only when that part changes. Under the hood
-`TwinScreenScope` is an `InheritedModel`. You can also pass an aspect to
-`of`:
+`TwinScreenScope` is an `InheritedModel`. For the parts without their own
+reader (`source`, `size` and `displayFeatures`), pass an aspect to `of`. The
+whole `TwinScreenData` is returned, but the widget depends on that aspect only:
 
 ```dart
-final data = TwinScreen.of(context, TwinAspect.segments);
+final source = TwinScreen.of(context, TwinAspect.source).source;
+final size = TwinScreen.of(context, TwinAspect.size).size; // also displayFeatures
 ```
+
+`TwinScreen.breakpointsOf(context)` returns the scope's window-class
+breakpoints without creating a dependency.
 
 `TwinScreen.maybeOf` returns null when there is no scope.
 
