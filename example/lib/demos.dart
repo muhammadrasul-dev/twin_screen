@@ -34,6 +34,12 @@ class Demo {
       (_) => const PaneDemo(),
     ),
     Demo._(
+      'TwinListDetail',
+      'A list and its detail view',
+      Icons.view_sidebar_outlined,
+      (_) => const ListDetailDemo(),
+    ),
+    Demo._(
       'Fold-aware dialog',
       'Opens on one side of the fold',
       Icons.chat_bubble_outline,
@@ -278,6 +284,51 @@ class _PaneBox extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// A small inbox built with [TwinListDetail].
+class ListDetailDemo extends StatefulWidget {
+  /// Creates the demo.
+  const ListDetailDemo({super.key});
+
+  @override
+  State<ListDetailDemo> createState() => _ListDetailDemoState();
+}
+
+class _ListDetailDemoState extends State<ListDetailDemo> {
+  int? _selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return TwinListDetail(
+      list: ListView.builder(
+        itemCount: 30,
+        itemBuilder: (BuildContext context, int index) => ListTile(
+          title: Text('Message $index'),
+          selected: index == _selected,
+          onTap: () => setState(() => _selected = index),
+        ),
+      ),
+      detail: _selected == null
+          ? null
+          : Builder(
+              builder: (BuildContext context) => Scaffold(
+                appBar: AppBar(
+                  title: Text('Message $_selected'),
+                  automaticallyImplyLeading: false,
+                  leading: TwinListDetail.isSplitOf(context)
+                      ? null
+                      : BackButton(
+                          onPressed: () => setState(() => _selected = null),
+                        ),
+                ),
+                body: Center(child: Text('Body of message $_selected')),
+              ),
+            ),
+      placeholder: const Center(child: Text('Select a message')),
+      onDetailClosed: () => setState(() => _selected = null),
     );
   }
 }

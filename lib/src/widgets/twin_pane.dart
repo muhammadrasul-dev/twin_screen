@@ -51,6 +51,7 @@ class TwinPane extends StatelessWidget {
     required this.end,
     this.fallback = TwinPaneFallback.windowClass,
     this.fallbackRatio = 0.5,
+    this.maintainHiddenPane = false,
   }) : assert(fallbackRatio > 0 && fallbackRatio < 1);
 
   /// The leading pane.
@@ -65,6 +66,11 @@ class TwinPane extends StatelessWidget {
   /// The share of the space given to [start] when the fallback splits
   /// without a fold to align to.
   final double fallbackRatio;
+
+  /// Whether a hidden pane stays in the tree, off screen, so it keeps its
+  /// state (scroll position, text input) while the other pane is shown.
+  /// Defaults to false: a hidden pane is disposed.
+  final bool maintainHiddenPane;
 
   static const Key _startKey = ValueKey<String>('twin_pane.start');
   static const Key _endKey = ValueKey<String>('twin_pane.end');
@@ -86,15 +92,24 @@ class TwinPane extends StatelessWidget {
         final MediaQueryData? mediaQuery = MediaQuery.maybeOf(context);
         return Stack(
           children: <Widget>[
-            if (rects.start case final Rect rect) _pane(_startKey, rect, region, mediaQuery, start),
-            if (rects.end case final Rect rect) _pane(_endKey, rect, region, mediaQuery, end),
+            if (rects.start ?? (maintainHiddenPane ? region : null) case final Rect rect)
+              _pane(_startKey, rect, region, mediaQuery, start, hidden: rects.start == null),
+            if (rects.end ?? (maintainHiddenPane ? region : null) case final Rect rect)
+              _pane(_endKey, rect, region, mediaQuery, end, hidden: rects.end == null),
           ],
         );
       },
     );
   }
 
-  Widget _pane(Key key, Rect rect, Rect region, MediaQueryData? mediaQuery, Widget child) {
+  Widget _pane(
+    Key key,
+    Rect rect,
+    Rect region,
+    MediaQueryData? mediaQuery,
+    Widget child, {
+    required bool hidden,
+  }) {
     Widget pane = child;
     if (mediaQuery != null) {
       final Rect screen = Offset.zero & mediaQuery.size;
@@ -107,6 +122,11 @@ class TwinPane extends StatelessWidget {
         child: pane,
       );
     }
+    // Always wrapped, so a pane keeps its state when it is hidden or shown.
+    pane = Offstage(
+      offstage: hidden,
+      child: TickerMode(enabled: !hidden, child: pane),
+    );
     return Positioned.fromRect(key: key, rect: rect.shift(-region.topLeft), child: pane);
   }
 }

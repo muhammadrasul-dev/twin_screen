@@ -16,6 +16,7 @@ export 'src/models/window_class.dart';
 export 'src/platform/twin_platform_state.dart';
 export 'src/widgets/fold_aware_bottom_sheet.dart';
 export 'src/widgets/fold_aware_dialog.dart';
+export 'src/widgets/twin_list_detail.dart';
 export 'src/widgets/twin_pane.dart';
 export 'src/widgets/twin_screen_scope.dart';
 export 'src/widgets/window_class_builder.dart';

@@ -24,6 +24,7 @@ so the same code adapts everywhere.
 - [The screen state](#the-screen-state)
 - [TwinPane](#twinpane)
 - [Fold-aware dialog](#fold-aware-dialog)
+- [TwinListDetail](#twinlistdetail)
 - [Window classes](#window-classes)
 - [Debug overlay and fold simulator](#debug-overlay-and-fold-simulator)
 - [Platform support](#platform-support)
@@ -137,6 +138,7 @@ walks through a complete list-detail screen.
 | Know how my app is shown right now (folded, open, half-open…) | `TwinScreen.modeOf(context)` |
 | Show two things on the two sides of the fold | `TwinPane(start:, end:)` |
 | Know whether `TwinPane` will split, to open details as a page otherwise | `TwinPaneRects.resolve(...).isSplit` |
+| Build a list with a detail view that adapts to the fold | `TwinListDetail(list:, detail:)` |
 | Keep a dialog on one side of the fold | `showFoldAwareDialog(...)` |
 | Keep a bottom sheet on one side of the fold | `showFoldAwareBottomSheet(...)` |
 | Pick a layout for phones, tablets and desktops | `WindowClassBuilder` or `WindowClass.of(context)` |
@@ -263,6 +265,27 @@ showFoldAwareBottomSheet<void>(
 ```
 
 Read more in the [fold-aware dialog guide](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/fold-aware-dialog.md).
+
+## TwinListDetail
+
+`TwinListDetail` is a list and its detail view, built on `TwinPane`. It splits
+where `TwinPane` splits. Where it does not (a phone, the cover screen), it shows
+the list, then the detail once something is selected:
+
+```dart
+TwinListDetail(
+  list: ItemList(onSelected: (item) => setState(() => _selected = item)),
+  detail: _selected == null ? null : ItemDetail(item: _selected!),
+  placeholder: const Center(child: Text('Select an item')),
+  onDetailClosed: () => setState(() => _selected = null), // back gesture
+)
+```
+
+The list keeps its scroll position while the detail is shown. Inside either
+view, `TwinListDetail.isSplitOf(context)` says whether they are side by side,
+for example to show a back button only when they are stacked.
+
+Read more in the [TwinListDetail guide](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/twin-list-detail.md).
 
 ## Window classes
 
@@ -396,6 +419,7 @@ dialogs on the fold. Paste this into your `CLAUDE.md`, `AGENTS.md`,
   never by device model, platform or hard-coded pixel widths.
 - Two sides of the fold: `TwinPane(start:, end:)`. Use start/end, not left/right.
   Never place content under the hinge.
+- List and detail: `TwinListDetail(list:, detail:, onDetailClosed:)` instead of a hand-made split.
 - Dialogs: `showFoldAwareDialog` instead of `showDialog`; pass the tap position as `anchorPoint`.
 - Bottom sheets: `showFoldAwareBottomSheet` instead of `showModalBottomSheet`.
 - Prefer narrow readers (`modeOf`, `postureOf`, `hingeOf`) over `TwinScreen.of(context)`.
@@ -414,6 +438,7 @@ most often, and how to check their work with the fold simulator.
 - [Getting started](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/getting-started.md)
 - [Screen state](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/screen-state.md)
 - [TwinPane](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/twin-pane.md)
+- [TwinListDetail](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/twin-list-detail.md)
 - [Fold-aware dialog](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/fold-aware-dialog.md)
 - [Window classes](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/window-classes.md)
 - [Debug overlay and simulator](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/debug-overlay.md)

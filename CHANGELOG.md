@@ -1,3 +1,12 @@
+## 0.3.0
+
+* `TwinListDetail`: a list and its detail view. Side by side when the window
+  splits (fold, hinge, or a medium or larger window), one at a time otherwise,
+  with the back gesture calling `onDetailClosed`. Both views keep their state.
+  `TwinListDetail.isSplitOf(context)` tells a view which layout it is in.
+* `TwinPane.maintainHiddenPane`: keeps a hidden pane in the tree, off screen,
+  so it keeps its state. Off by default.
+
 ## 0.2.0
 
 * `showFoldAwareBottomSheet` and `FoldAwareBottomSheetRoute`: a modal bottom
