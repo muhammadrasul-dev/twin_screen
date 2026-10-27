@@ -129,8 +129,11 @@ confirmed with an unfolded device.
 
 **Geometry** (from the CoreSimulator profile): the inner display is
 951 × 669 pt and folds like a book in landscape, so in portrait the fold runs
-across (tabletop). The cover display is 466 × 678 pt, but the right 80 pt hold
-the camera and the status bar, so apps get a 386 × 678 pt window.
+across (tabletop). On both displays the right 80 pt (in landscape) hold the
+camera and the status bar, so apps get a 386 × 678 pt window on the cover
+display and 871 × 669 pt inside. The fold stays at the middle of the whole
+951 pt display, so it is 475.5 pt from the start of the window, not at the
+window's centre (435.5 pt). The simulator's iPhone Duo preset models this.
 
 **Deployment target.** Xcode 27 no longer builds for iOS 13 or 14, so the
 plugin requires iOS 15.0. If your Podfile has an older `platform :ios`, raise

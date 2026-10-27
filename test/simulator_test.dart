@@ -82,8 +82,22 @@ void main() {
     // CoreSimulator profile: cover 1398 × 2034 px, inner 2007 × 2853 px, @3x.
     // On the cover screen the app window is 386 pt wide (80 pt status column).
     expect(duo.coverSize, const Size(386, 678));
-    expect(portrait.size, const Size(669, 951));
-    expect(landscape.size, const Size(951, 669));
+    // The window is 80 pt shorter than the 951 pt screen, but the fold stays
+    // in the middle of the screen: 475.5 pt from the start of the window.
+    expect(portrait.size, const Size(669, 871));
+    expect(landscape.size, const Size(871, 669));
+    expect(portrait.displayFeatures.single.bounds, const Rect.fromLTWH(0, 475.5, 669, 0));
+    expect(landscape.displayFeatures.single.bounds, const Rect.fromLTWH(475.5, 0, 0, 669));
+    expect(
+      TwinSimulatedScreen.resolve(
+        preset: duo,
+        posture: TwinPosture.halfOpened,
+        hingeAngle: 110,
+        orientation: Orientation.landscape,
+        span: TwinSimulatedSpan.end,
+      ).size,
+      const Size(395.5, 669),
+    );
     // The inner screen folds like a book in landscape; held in portrait the
     // fold runs across.
     expect(resolveScreen(landscape).mode, TwinScreenMode.book);
@@ -107,6 +121,21 @@ void main() {
   });
 
   group('TwinSimulatorController', () {
+    test('a preset opens in its default orientation', () {
+      final TwinSimulatorController controller = TwinSimulatorController();
+      addTearDown(controller.dispose);
+      expect(controller.orientation, Orientation.portrait);
+      controller.preset = TwinDevicePreset.iPhoneDuo;
+      expect(controller.orientation, Orientation.landscape);
+      expect(controller.screen.platform.rotationQuarterTurns, 0);
+      controller.simulate(preset: TwinDevicePreset.galaxyZFold);
+      expect(controller.orientation, Orientation.portrait);
+      expect(
+        TwinSimulatorController(preset: TwinDevicePreset.iPhoneDuo).orientation,
+        Orientation.landscape,
+      );
+    });
+
     test('angle and posture follow each other', () {
       final TwinSimulatorController c = TwinSimulatorController(enabled: true);
       c.hingeAngle = 10;

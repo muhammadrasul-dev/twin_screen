@@ -78,7 +78,7 @@ void main() {
       orientation: Orientation.landscape,
     );
     await tester.pump();
-    expect(appText(tester), 'book 951 0');
+    expect(appText(tester), 'book 871 0');
 
     controller.orientation = Orientation.portrait;
     await tester.pump();

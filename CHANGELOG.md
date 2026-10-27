@@ -1,3 +1,13 @@
+## 0.4.1
+
+* The iPhone Duo simulator preset now matches the real window: 871 × 669 pt on
+  the unfolded screen (the right 80 pt hold the status column), with the fold
+  at 475.5 pt, the middle of the 951 pt screen.
+* New `TwinDevicePreset.innerEndInset` and `defaultOrientation`. Picking a
+  preset, or creating a `TwinSimulatorController` without `orientation:`, now
+  uses the preset's default orientation. iPhone Duo opens in landscape (book)
+  instead of portrait (tabletop).
+
 ## 0.4.0
 
 * `TwinNavigation` and `TwinDestination`: navigation that adapts to the window

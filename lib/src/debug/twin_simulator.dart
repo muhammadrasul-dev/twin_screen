@@ -36,15 +36,16 @@ enum TwinSimulatedSpan {
 /// ```
 class TwinSimulatorController extends ChangeNotifier {
   /// Creates a controller. The simulator starts off unless [enabled] is true.
+  /// [orientation] defaults to the preset's natural one.
   TwinSimulatorController({
     bool enabled = false,
     TwinDevicePreset preset = TwinDevicePreset.galaxyZFold,
     TwinPosture posture = TwinPosture.flat,
-    Orientation orientation = Orientation.portrait,
+    Orientation? orientation,
     TwinSimulatedSpan span = TwinSimulatedSpan.both,
   }) : _enabled = enabled,
        _preset = preset,
-       _orientation = orientation,
+       _orientation = orientation ?? preset.defaultOrientation,
        _span = span,
        _posture = posture,
        _hingeAngle = defaultAngleFor(posture);
@@ -89,6 +90,7 @@ class TwinSimulatorController extends ChangeNotifier {
   set preset(TwinDevicePreset value) {
     if (value == _preset) return;
     _preset = value;
+    _orientation = value.defaultOrientation;
     if (!value.hasCover && _posture == TwinPosture.closed) _setPosture(TwinPosture.flat);
     notifyListeners();
   }
@@ -140,7 +142,10 @@ class TwinSimulatorController extends ChangeNotifier {
     double? hingeAngle,
   }) {
     _enabled = true;
-    if (preset != null) _preset = preset;
+    if (preset != null) {
+      _preset = preset;
+      _orientation = preset.defaultOrientation;
+    }
     if (orientation != null) _orientation = orientation;
     if (span != null) _span = span;
     if (posture != null) _setPosture(posture);
@@ -193,7 +198,13 @@ class TwinSimulatedScreen {
   }) {
     final bool closed = posture == TwinPosture.closed;
     final Size natural = closed ? (preset.coverSize ?? preset.innerSize) : preset.innerSize;
-    final Size full = _oriented(natural, orientation);
+    final Size display = _oriented(natural, orientation);
+    // The part of the unfolded screen the app does not cover, at the end of
+    // its long side.
+    final double inset = closed ? 0 : preset.innerEndInset;
+    final Size full = display.width >= display.height
+        ? Size(display.width - inset, display.height)
+        : Size(display.width, display.height - inset);
     final bool rotated = _orientationOf(natural) != orientation;
     final TwinPlatformState platform = TwinPlatformState(
       deviceType: preset.deviceType,
@@ -226,11 +237,18 @@ class TwinSimulatedScreen {
     }
 
     final TwinHingeAxis axis = rotated ? preset.innerHingeAxis.flipped : preset.innerHingeAxis;
+    final double hw = preset.hingeWidth;
+    // The fold is in the middle of the whole screen, not of the app window.
+    final double foldStart =
+        ((axis == TwinHingeAxis.vertical ? display.width : display.height) - hw) / 2;
     if (span != TwinSimulatedSpan.both) {
       final bool horizontal = axis == TwinHingeAxis.horizontal;
       final bool isStart = span == TwinSimulatedSpan.start;
+      final double extent = isStart
+          ? foldStart
+          : (horizontal ? full.height : full.width) - foldStart - hw;
       return TwinSimulatedScreen(
-        size: _halfOf(full, axis, preset.hingeWidth),
+        size: horizontal ? Size(full.width, extent) : Size(extent, full.height),
         padding: horizontal
             ? EdgeInsets.only(
                 top: isStart ? preset.statusBarHeight : 0,
@@ -243,10 +261,9 @@ class TwinSimulatedScreen {
       );
     }
 
-    final double hw = preset.hingeWidth;
     final Rect bounds = axis == TwinHingeAxis.vertical
-        ? Rect.fromLTWH((full.width - hw) / 2, 0, hw, full.height)
-        : Rect.fromLTWH(0, (full.height - hw) / 2, full.width, hw);
+        ? Rect.fromLTWH(foldStart, 0, hw, full.height)
+        : Rect.fromLTWH(0, foldStart, full.width, hw);
     return TwinSimulatedScreen(
       size: full,
       padding: insets,

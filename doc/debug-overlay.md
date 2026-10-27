@@ -73,9 +73,11 @@ switch between devices and postures, and when you turn the simulator off.
 
 ### The presets
 
+Picking a preset also picks its default orientation: iPhone Duo opens in landscape (a book), the others in portrait.
+
 | Preset | Kind | Inner screen (natural) | Fold | Cover screen |
 |---|---|---|---|---|
-| iPhone Duo | book | 951 × 669 pt | vertical | 386 × 678 pt app window |
+| iPhone Duo | book | 871 × 669 pt app window (951 pt screen) | vertical | 386 × 678 pt app window |
 | Galaxy Z Fold | book | 707 × 823 dp | vertical | 369 × 905 dp |
 | Galaxy Z Flip | flip | 411 × 1006 dp | horizontal | 360 × 374 dp |
 | Pixel Fold | book | 841 × 701 dp | vertical | 411 × 797 dp |

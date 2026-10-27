@@ -360,7 +360,7 @@ its state while you switch.
 
 | Preset | Kind | Inner screen | Cover screen |
 |---|---|---|---|
-| iPhone Duo | book | 951 × 669 pt | 386 × 678 pt app window |
+| iPhone Duo | book | 871 × 669 pt app window (951 pt screen) | 386 × 678 pt app window |
 | Galaxy Z Fold | book | 707 × 823 dp | 369 × 905 dp |
 | Galaxy Z Flip | flip | 411 × 1006 dp | 360 × 374 dp |
 | Pixel Fold | book | 841 × 701 dp | 411 × 797 dp |

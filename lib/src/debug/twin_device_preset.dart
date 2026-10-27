@@ -1,5 +1,4 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/painting.dart';
+import 'package:flutter/widgets.dart';
 
 import '../models/twin_enums.dart';
 
@@ -17,14 +16,20 @@ class TwinDevicePreset {
     required this.innerHingeAxis,
     this.coverSize,
     this.hingeWidth = 0,
+    this.innerEndInset = 0,
+    this.defaultOrientation = Orientation.portrait,
     this.statusBarHeight = 24,
     this.bottomInset = 16,
     this.platform = TargetPlatform.android,
   });
 
   /// iPhone Duo (iOS 27.1): a 951 × 669 pt inner screen that folds like a
-  /// book in landscape, and a 466 × 678 pt cover screen whose right 80 pt
-  /// hold the camera and status bar, so apps get a 386 × 678 pt window.
+  /// book in landscape, and a 466 × 678 pt cover screen. On both screens the
+  /// right 80 pt (in landscape) hold the camera and status bar, so apps get a
+  /// 386 × 678 pt window on the cover screen and 871 × 669 pt inside. It
+  /// opens in landscape, where the fold makes a book. The
+  /// fold stays at the middle of the whole 951 pt screen, 475.5 pt from the
+  /// start of the window.
   ///
   /// Sizes come from the iOS 27.1 simulator.
   static const TwinDevicePreset iPhoneDuo = TwinDevicePreset(
@@ -33,6 +38,8 @@ class TwinDevicePreset {
     coverSize: Size(386, 678),
     innerSize: Size(951, 669),
     innerHingeAxis: TwinHingeAxis.vertical,
+    innerEndInset: 80,
+    defaultOrientation: Orientation.landscape,
     statusBarHeight: 44,
     bottomInset: 20,
     platform: TargetPlatform.iOS,
@@ -117,6 +124,15 @@ class TwinDevicePreset {
   /// The width of a physical hinge that hides content. Zero for folds.
   final double hingeWidth;
 
+  /// How much of the unfolded screen's long side, at its end, the app window
+  /// does not cover (for example iPhone Duo's camera and status column).
+  /// The fold stays at the middle of the whole [innerSize]. Zero for most
+  /// devices.
+  final double innerEndInset;
+
+  /// The orientation the simulator uses when this preset is picked.
+  final Orientation defaultOrientation;
+
   /// The top safe-area inset.
   final double statusBarHeight;
 
@@ -138,6 +154,8 @@ class TwinDevicePreset {
       other.innerSize == innerSize &&
       other.innerHingeAxis == innerHingeAxis &&
       other.hingeWidth == hingeWidth &&
+      other.innerEndInset == innerEndInset &&
+      other.defaultOrientation == defaultOrientation &&
       other.statusBarHeight == statusBarHeight &&
       other.bottomInset == bottomInset &&
       other.platform == platform;
@@ -150,6 +168,8 @@ class TwinDevicePreset {
     innerSize,
     innerHingeAxis,
     hingeWidth,
+    innerEndInset,
+    defaultOrientation,
     statusBarHeight,
     bottomInset,
     platform,
