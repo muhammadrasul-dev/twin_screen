@@ -1,3 +1,11 @@
+## 0.4.5
+
+* iOS: when the system reports no division region (the iOS 27.1 simulator
+  never does), the fold is now estimated as a line through the middle of the
+  whole screen, across its long side. This is a heuristic, not a measurement.
+  A real division region, when there is one, is used instead. The estimate is
+  not made while the device is closed.
+
 ## 0.4.4
 
 * `TwinPane.hiddenPane` with `TwinHiddenPane.dispose` (default), `keep` and the

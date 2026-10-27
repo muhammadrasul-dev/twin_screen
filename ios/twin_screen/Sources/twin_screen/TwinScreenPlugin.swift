@@ -213,6 +213,26 @@ public class TwinScreenPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     }
   }
 
+  /// A heuristic fold for when the system reports no division region: a line
+  /// through the middle of the whole screen, across its long side (iPhone Duo
+  /// folds like a book in landscape, so the line is vertical there). The app
+  /// window can be smaller than the screen, so the line is not always in the
+  /// middle of the window. Returns nil when the window does not reach it.
+  private func estimatedFold(in view: UIView) -> CGRect? {
+    guard let screen = view.window?.windowScene?.screen else { return nil }
+    let bounds = screen.bounds
+    guard bounds.width > 0, bounds.height > 0 else { return nil }
+    let middle = view.convert(CGPoint(x: bounds.midX, y: bounds.midY), from: screen.coordinateSpace)
+    let size = view.bounds
+    guard middle.x.isFinite, middle.y.isFinite else { return nil }
+    if bounds.width >= bounds.height {
+      guard middle.x > size.minX, middle.x < size.maxX else { return nil }
+      return CGRect(x: middle.x, y: size.minY, width: 0, height: size.height)
+    }
+    guard middle.y > size.minY, middle.y < size.maxY else { return nil }
+    return CGRect(x: size.minX, y: middle.y, width: size.width, height: 0)
+  }
+
   // MARK: - State
 
   private func emitIfChanged() {
@@ -250,8 +270,14 @@ public class TwinScreenPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
         case .fullyOpen: foldState = "flat"
         default: foldState = "unknown"
         }
-        for region in reservedRegions(kind: "divisionRegionKind", in: view) {
+        let divisions = reservedRegions(kind: "divisionRegionKind", in: view)
+        for region in divisions {
           features.append(Self.feature(region.frame, type: "fold", state: foldState))
+        }
+        // The iOS 27.1 simulator reports no division region at all, even when
+        // the hinge is open. Estimate the fold instead.
+        if divisions.isEmpty, let estimate = estimatedFold(in: view) {
+          features.append(Self.feature(estimate, type: "fold", state: foldState))
         }
       }
       for region in reservedRegions(kind: "occlusionRegionKind", in: view) where region.active {

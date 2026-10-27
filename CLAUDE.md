@@ -111,6 +111,9 @@ not duplicate.
   `UIHinge` has `status` (NSInteger) and `angle` (double); `UIViewReservedRegion` has `frame`,
   `kind`, `margins`, `isActive`; kinds come from `+[UIViewReservedRegionKind divisionRegionKind /
   occlusionRegionKind]`. Read properties only after `responds(to:)` (a KVC miss crashes the app).
+  The 27.1 simulator returns **zero** division regions for every option value (selector exists,
+  `_sceneRegions` only holds `surface` regions), so the plugin falls back to an estimated fold:
+  the middle of the whole `UIScreen` across its long side (0.4.5, heuristic, unverified on a device).
   `includeInactive` is assumed to be `1 << 0`; still to be confirmed with an unfolded device.
   iPhone Duo geometry (CoreSimulator profile, @3x): cover display 466 × 678 pt, but the app window
   there is 386 × 678 pt (the right 80 pt hold the camera and status bar); inner display

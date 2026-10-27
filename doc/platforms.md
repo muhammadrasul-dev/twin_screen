@@ -135,6 +135,16 @@ display and 871 × 669 pt inside. The fold stays at the middle of the whole
 951 pt display, so it is 475.5 pt from the start of the window, not at the
 window's centre (435.5 pt). The simulator's iPhone Duo preset models this.
 
+**Estimated fold (heuristic).** The iOS 27.1 simulator returns no division
+region even with the hinge open, so there is nothing to read the fold from.
+When that happens the plugin estimates the fold as a line through the middle
+of the whole screen (`UIScreen` bounds), across its long side: vertical in
+landscape, horizontal in portrait. The app window can be smaller than the
+screen (iPhone Duo reserves 80 pt for the status column), so the line is not
+always in the middle of the window. If the system does report a division
+region, that is used and nothing is estimated. Treat the estimate as a best
+guess until it is confirmed on a real device.
+
 **Deployment target.** Xcode 27 no longer builds for iOS 13 or 14, so the
 plugin requires iOS 15.0. If your Podfile has an older `platform :ios`, raise
 it, and if CocoaPods still complains about a pod's deployment target, add this
