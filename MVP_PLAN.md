@@ -21,6 +21,9 @@
 - [x] 9-bosqich: example app, README, CHANGELOG 0.1.0, testlar, `.pubignore`, `pub publish --dry-run` (0 warning)
 - [x] 10-bosqich: nashr — GitHub `main` + pub.dev `0.1.0` (2026-10-13). Nashrdan oldin: holat yo'qolishi buglari tuzatildi, Flutter 3.32 / AGP 8 / minSdk 21 qo'llab-quvvatlandi, README qayta yozildi, `doc/ai-agents.md` qo'shildi
 
+- [x] 11-bosqich: fold-aware widgetlar (nashrsiz, `0.4.0` gacha): `showFoldAwareBottomSheet` (0.2.0), `TwinListDetail` + `TwinPane.maintainHiddenPane` (0.3.0), `TwinNavigation` (0.4.0). pub.dev'ga hammasi tugagach, ruxsat bilan nashr qilinadi
+  - [ ] Yangi widgetlarni Android emulatorlarida (Pixel Fold) ko'zdan kechirish
+
 ---
 
 ## 0-bosqich — Tayyorgarlik (siz qilasiz)
@@ -187,7 +190,6 @@
 
 - large / extraLarge window class'lar
 - Android rear display / dual display rejimlari (`WindowAreaController`)
-- Fold-aware bottom sheet, navigation, list-detail widgetlari
 - Hinge angle'ga bog'langan animatsiyalar
 - Qurilma modellari allowlist'i
 - Simulyator uchun klaviatura shortcut'lari

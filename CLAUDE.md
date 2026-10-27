@@ -139,8 +139,14 @@ not duplicate.
   `flutter build web`, `cd example/android && ./gradlew :twin_screen:testDebugUnitTest`,
   `dart pub publish --dry-run`.
 
+## After the MVP
+
+0.2.0 `showFoldAwareBottomSheet`, 0.3.0 `TwinListDetail` (+ `TwinPane.maintainHiddenPane`),
+0.4.0 `TwinNavigation` are built and committed, not yet published (publish all at once, with the
+user's go-ahead). Gotcha: `ModalBottomSheetRoute.buildPage` reads MediaQuery from the context it
+is handed, so wrap `super.buildPage` in a `Builder` below `FoldAwareDialog`.
+
 ## Later (not in MVP)
 
 large / extraLarge window classes, Android rear-display and dual-display modes
-(`WindowAreaController`), fold-aware bottom sheet / navigation / list-detail widgets, hinge-angle
-driven animations, device model allowlists, keyboard shortcuts for the simulator.
+(`WindowAreaController`), hinge-angle driven animations, device model allowlists, keyboard shortcuts for the simulator.

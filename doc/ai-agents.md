@@ -53,16 +53,18 @@ large-screen layouts. Guides: https://github.com/muhammadrasul-dev/twin_screen/t
   and the top side when the fold is horizontal.
 - `TwinPane` needs bounded constraints (a `Scaffold` body, `Expanded`, `SizedBox`).
 - Where only one pane fits, `TwinPane` shows `start` (default
-  `fallback: TwinPaneFallback.windowClass`). For list-detail, check
-  `TwinPaneRects.resolve(region: Offset.zero & screen.size, hinge: screen.hinge,
-  widthClass: screen.windowClass.width).isSplit` and push the detail as a new
-  route when it is false.
-- Navigation that adapts to size: `WindowClassBuilder(compact: ..., medium: ..., expanded: ...)`.
+  `fallback: TwinPaneFallback.windowClass`).
+- List and detail: `TwinListDetail(list:, detail:, onDetailClosed:)`. Do not
+  hand-roll the split or push the detail as a route.
+- Bottom bar or rail: `TwinNavigation(destinations:, selectedIndex:,
+  onDestinationSelected:, body:)`, not a fixed `NavigationBar`.
+- Other layouts that adapt to size: `WindowClassBuilder(compact: ..., medium: ..., expanded: ...)`.
 - `tabletop` mode: content on top, controls below the fold.
 
 ### Dialogs
 - Use `showFoldAwareDialog` instead of `showDialog`. Pass
   `anchorPoint: details.globalPosition` from the tap that opened it, when there is one.
+- Bottom sheets: `showFoldAwareBottomSheet` instead of `showModalBottomSheet`.
 
 ### Tests
 - No hardware needed. Build a device with

@@ -1,3 +1,10 @@
+## 0.4.0
+
+* `TwinNavigation` and `TwinDestination`: navigation that adapts to the window
+  and the fold. A bottom bar on compact windows, a rail on medium ones, an
+  extended rail on expanded ones, and always a rail beside a separating
+  vertical hinge. Override with `TwinNavigationLayout`.
+
 ## 0.3.0
 
 * `TwinListDetail`: a list and its detail view. Side by side when the window

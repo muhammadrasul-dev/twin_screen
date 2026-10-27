@@ -25,6 +25,7 @@ so the same code adapts everywhere.
 - [TwinPane](#twinpane)
 - [Fold-aware dialog](#fold-aware-dialog)
 - [TwinListDetail](#twinlistdetail)
+- [TwinNavigation](#twinnavigation)
 - [Window classes](#window-classes)
 - [Debug overlay and fold simulator](#debug-overlay-and-fold-simulator)
 - [Platform support](#platform-support)
@@ -139,6 +140,7 @@ walks through a complete list-detail screen.
 | Show two things on the two sides of the fold | `TwinPane(start:, end:)` |
 | Know whether `TwinPane` will split, to open details as a page otherwise | `TwinPaneRects.resolve(...).isSplit` |
 | Build a list with a detail view that adapts to the fold | `TwinListDetail(list:, detail:)` |
+| Show a bottom bar, rail or extended rail to match the window and fold | `TwinNavigation(destinations:, body:)` |
 | Keep a dialog on one side of the fold | `showFoldAwareDialog(...)` |
 | Keep a bottom sheet on one side of the fold | `showFoldAwareBottomSheet(...)` |
 | Pick a layout for phones, tablets and desktops | `WindowClassBuilder` or `WindowClass.of(context)` |
@@ -287,6 +289,29 @@ for example to show a back button only when they are stacked.
 
 Read more in the [TwinListDetail guide](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/twin-list-detail.md).
 
+## TwinNavigation
+
+`TwinNavigation` picks the navigation for the window: a bottom bar on a phone,
+a rail on a medium window or an unfolded foldable, an extended rail on a large
+window. A rail sits on the start edge, away from the hinge, and a vertical
+hinge that separates the window always gets a rail:
+
+```dart
+TwinNavigation(
+  destinations: const [
+    TwinDestination(icon: Icon(Icons.inbox_outlined), label: 'Inbox'),
+    TwinDestination(icon: Icon(Icons.send_outlined), label: 'Sent'),
+  ],
+  selectedIndex: _index,
+  onDestinationSelected: (i) => setState(() => _index = i),
+  body: pages[_index], // can hold a TwinPane or TwinListDetail
+)
+```
+
+Set `layout:` to force `bottomBar`, `rail` or `extendedRail`.
+
+Read more in the [TwinNavigation guide](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/twin-navigation.md).
+
 ## Window classes
 
 Material 3 window size classes, so one layout decision covers phones, tablets,
@@ -419,6 +444,7 @@ dialogs on the fold. Paste this into your `CLAUDE.md`, `AGENTS.md`,
   never by device model, platform or hard-coded pixel widths.
 - Two sides of the fold: `TwinPane(start:, end:)`. Use start/end, not left/right.
   Never place content under the hinge.
+- Navigation: `TwinNavigation(destinations:, body:)` instead of a fixed `NavigationBar`.
 - List and detail: `TwinListDetail(list:, detail:, onDetailClosed:)` instead of a hand-made split.
 - Dialogs: `showFoldAwareDialog` instead of `showDialog`; pass the tap position as `anchorPoint`.
 - Bottom sheets: `showFoldAwareBottomSheet` instead of `showModalBottomSheet`.
@@ -439,6 +465,7 @@ most often, and how to check their work with the fold simulator.
 - [Screen state](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/screen-state.md)
 - [TwinPane](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/twin-pane.md)
 - [TwinListDetail](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/twin-list-detail.md)
+- [TwinNavigation](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/twin-navigation.md)
 - [Fold-aware dialog](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/fold-aware-dialog.md)
 - [Window classes](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/window-classes.md)
 - [Debug overlay and simulator](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/debug-overlay.md)

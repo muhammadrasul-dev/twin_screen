@@ -40,6 +40,12 @@ class Demo {
       (_) => const ListDetailDemo(),
     ),
     Demo._(
+      'TwinNavigation',
+      'Bottom bar or rail, by window and fold',
+      Icons.menu_open,
+      (_) => const NavigationDemo(),
+    ),
+    Demo._(
       'Fold-aware dialog',
       'Opens on one side of the fold',
       Icons.chat_bubble_outline,
@@ -329,6 +335,35 @@ class _ListDetailDemoState extends State<ListDetailDemo> {
             ),
       placeholder: const Center(child: Text('Select a message')),
       onDetailClosed: () => setState(() => _selected = null),
+    );
+  }
+}
+
+/// Navigation that follows the window class and the fold.
+class NavigationDemo extends StatefulWidget {
+  /// Creates the demo.
+  const NavigationDemo({super.key});
+
+  @override
+  State<NavigationDemo> createState() => _NavigationDemoState();
+}
+
+class _NavigationDemoState extends State<NavigationDemo> {
+  static const List<TwinDestination> _destinations = <TwinDestination>[
+    TwinDestination(icon: Icon(Icons.inbox_outlined), label: 'Inbox'),
+    TwinDestination(icon: Icon(Icons.send_outlined), label: 'Sent'),
+    TwinDestination(icon: Icon(Icons.drafts_outlined), label: 'Drafts'),
+  ];
+
+  int _index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return TwinNavigation(
+      destinations: _destinations,
+      selectedIndex: _index,
+      onDestinationSelected: (int i) => setState(() => _index = i),
+      body: Center(child: Text(_destinations[_index].label)),
     );
   }
 }

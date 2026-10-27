@@ -9,6 +9,7 @@ read the guide for the feature you need.
 | [Screen state](screen-state.md) | Understand `mode`, posture, hinge, segments and the data source, and read them efficiently |
 | [TwinPane](twin-pane.md) | Put two widgets on the two sides of the fold |
 | [TwinListDetail](twin-list-detail.md) | Build a list with a detail view that follows the fold |
+| [TwinNavigation](twin-navigation.md) | Switch between a bottom bar and a rail by window and fold |
 | [Fold-aware dialog](fold-aware-dialog.md) | Keep dialogs and bottom sheets off the hinge |
 | [Window classes](window-classes.md) | Adapt to phones, tablets, desktops and unfolded foldables with one rule |
 | [Debug overlay and simulator](debug-overlay.md) | See the fold, and try every foldable without owning one |
