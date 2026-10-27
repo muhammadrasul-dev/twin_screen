@@ -168,3 +168,18 @@ It uses the layout's own rules, so it cannot disagree with what is on screen,
 and it rebuilds the caller when the answer changes. From outside a `TwinPane`
 (a parent that has no pane above it), compute the rules yourself with
 `TwinPaneRects.resolve(...).isSplit`.
+
+## Hidden panes
+
+When only one pane shows (a phone, the cover screen), the other pane is not in
+the tree by default, so its state is lost when it disappears. `hiddenPane`
+changes that:
+
+| Value | Hidden pane |
+|---|---|
+| `TwinHiddenPane.dispose` (default) | removed; state lost |
+| `TwinHiddenPane.keepOnceShown` | built the first time it shows; then kept, off screen, with its state |
+| `TwinHiddenPane.keep` | always built, off screen, from the first frame |
+
+`keepOnceShown` suits a list that must keep its scroll position while a detail
+is open, without building a detail nobody has opened. `TwinListDetail` uses it.

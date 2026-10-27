@@ -290,4 +290,42 @@ void main() {
 
     expect(TwinPane.isSplitOf(tester.element(find.byType(TwinPane))), isFalse);
   });
+
+  group('hiddenPane', () {
+    Future<void> pumpWith(WidgetTester tester, TwinHiddenPane mode, Size size) => pumpPane(
+      tester,
+      size: size,
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: TwinPane(
+          hiddenPane: mode,
+          start: const SizedBox.expand(key: startKey),
+          end: const SizedBox.expand(key: endKey),
+        ),
+      ),
+    );
+
+    testWidgets('dispose builds only the visible pane', (WidgetTester tester) async {
+      await pumpWith(tester, TwinHiddenPane.dispose, const Size(400, 800));
+      expect(find.byKey(endKey, skipOffstage: false), findsNothing);
+    });
+
+    testWidgets('keep builds the hidden pane from the start', (WidgetTester tester) async {
+      await pumpWith(tester, TwinHiddenPane.keep, const Size(400, 800));
+      expect(find.byKey(endKey), findsNothing);
+      expect(find.byKey(endKey, skipOffstage: false), findsOneWidget);
+    });
+
+    testWidgets('keepOnceShown keeps a pane only after it was shown', (WidgetTester tester) async {
+      await pumpWith(tester, TwinHiddenPane.keepOnceShown, const Size(400, 800));
+      expect(find.byKey(endKey, skipOffstage: false), findsNothing, reason: 'never shown yet');
+
+      await pumpWith(tester, TwinHiddenPane.keepOnceShown, const Size(900, 800));
+      expect(find.byKey(endKey), findsOneWidget);
+
+      await pumpWith(tester, TwinHiddenPane.keepOnceShown, const Size(400, 800));
+      expect(find.byKey(endKey), findsNothing);
+      expect(find.byKey(endKey, skipOffstage: false), findsOneWidget, reason: 'kept once shown');
+    });
+  });
 }

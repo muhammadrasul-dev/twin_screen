@@ -90,7 +90,7 @@ class TwinListDetail extends StatelessWidget {
                 ? TwinPaneFallback.sideBySide
                 : (detailShown ? TwinPaneFallback.endOnly : TwinPaneFallback.startOnly),
             fallbackRatio: listRatio,
-            maintainHiddenPane: true,
+            hiddenPane: TwinHiddenPane.keepOnceShown,
           ),
         );
       },

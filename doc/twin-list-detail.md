@@ -60,4 +60,4 @@ changes.
 
 - Give it a bounded size, such as a `Scaffold` body.
 - To build your own variant, use [`TwinPane`](twin-pane.md) with
-  `maintainHiddenPane: true` so a hidden pane keeps its state.
+  `hiddenPane: TwinHiddenPane.keepOnceShown` so a hidden pane keeps its state.

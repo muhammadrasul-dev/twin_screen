@@ -26,6 +26,21 @@ enum TwinPaneFallback {
   stacked,
 }
 
+/// What [TwinPane] does with a pane that is not showing.
+enum TwinHiddenPane {
+  /// The hidden pane is removed from the tree and its state is lost. The
+  /// default: nothing is built that nobody sees.
+  dispose,
+
+  /// The hidden pane stays in the tree, off screen, from the first frame. It
+  /// keeps its state, but it is also built where it is never shown.
+  keep,
+
+  /// A pane is built only once it has been shown. After that, while hidden, it
+  /// stays in the tree and keeps its state (scroll position, text input).
+  keepOnceShown,
+}
+
 /// Shows two widgets on the two sides of a fold or hinge.
 ///
 /// 1. When a hinge separates the window (a half-opened fold, or a physical
@@ -43,7 +58,7 @@ enum TwinPaneFallback {
 ///
 /// TwinPane works anywhere on screen, not only full screen: it measures its
 /// own position relative to the [TwinScreenScope].
-class TwinPane extends StatelessWidget {
+class TwinPane extends StatefulWidget {
   /// Creates a two-pane layout.
   const TwinPane({
     super.key,
@@ -51,7 +66,8 @@ class TwinPane extends StatelessWidget {
     required this.end,
     this.fallback = TwinPaneFallback.windowClass,
     this.fallbackRatio = 0.5,
-    this.maintainHiddenPane = false,
+    this.hiddenPane = TwinHiddenPane.dispose,
+    @Deprecated('Use hiddenPane: TwinHiddenPane.keep instead.') this.maintainHiddenPane = false,
   }) : assert(fallbackRatio > 0 && fallbackRatio < 1);
 
   /// The leading pane.
@@ -67,9 +83,12 @@ class TwinPane extends StatelessWidget {
   /// without a fold to align to.
   final double fallbackRatio;
 
-  /// Whether a hidden pane stays in the tree, off screen, so it keeps its
-  /// state (scroll position, text input) while the other pane is shown.
-  /// Defaults to false: a hidden pane is disposed.
+  /// What happens to a pane that is not showing. Defaults to
+  /// [TwinHiddenPane.dispose].
+  final TwinHiddenPane hiddenPane;
+
+  /// Use [hiddenPane] with [TwinHiddenPane.keep] instead.
+  @Deprecated('Use hiddenPane: TwinHiddenPane.keep instead.')
   final bool maintainHiddenPane;
 
   /// Whether the nearest [TwinPane] above [context] shows both panes.
@@ -86,6 +105,14 @@ class TwinPane extends StatelessWidget {
   static const Key _endKey = ValueKey<String>('twin_pane.end');
 
   @override
+  State<TwinPane> createState() => _TwinPaneState();
+}
+
+class _TwinPaneState extends State<TwinPane> {
+  bool _startShown = false;
+  bool _endShown = false;
+
+  @override
   Widget build(BuildContext context) {
     return RootRegionBuilder(
       builder: (BuildContext context, Rect region, RenderTwinRoot? root) {
@@ -95,19 +122,42 @@ class TwinPane extends StatelessWidget {
           region: region,
           hinge: data.hinge,
           widthClass: data.windowClass.width,
-          fallback: fallback,
-          fallbackRatio: fallbackRatio,
+          fallback: widget.fallback,
+          fallbackRatio: widget.fallbackRatio,
           textDirection: Directionality.maybeOf(context) ?? TextDirection.ltr,
         );
         final MediaQueryData? mediaQuery = MediaQuery.maybeOf(context);
+        // ignore: deprecated_member_use_from_same_package
+        final TwinHiddenPane hiddenPane = widget.maintainHiddenPane
+            ? TwinHiddenPane.keep
+            : widget.hiddenPane;
+        if (rects.start != null) _startShown = true;
+        if (rects.end != null) _endShown = true;
+        bool keeps(bool shown) =>
+            hiddenPane == TwinHiddenPane.keep ||
+            (hiddenPane == TwinHiddenPane.keepOnceShown && shown);
         return _PaneSplitScope(
           isSplit: rects.isSplit,
           child: Stack(
             children: <Widget>[
-              if (rects.start ?? (maintainHiddenPane ? region : null) case final Rect rect)
-                _pane(_startKey, rect, region, mediaQuery, start, hidden: rects.start == null),
-              if (rects.end ?? (maintainHiddenPane ? region : null) case final Rect rect)
-                _pane(_endKey, rect, region, mediaQuery, end, hidden: rects.end == null),
+              if (rects.start ?? (keeps(_startShown) ? region : null) case final Rect rect)
+                _pane(
+                  TwinPane._startKey,
+                  rect,
+                  region,
+                  mediaQuery,
+                  widget.start,
+                  hidden: rects.start == null,
+                ),
+              if (rects.end ?? (keeps(_endShown) ? region : null) case final Rect rect)
+                _pane(
+                  TwinPane._endKey,
+                  rect,
+                  region,
+                  mediaQuery,
+                  widget.end,
+                  hidden: rects.end == null,
+                ),
             ],
           ),
         );

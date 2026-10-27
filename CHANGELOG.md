@@ -1,3 +1,11 @@
+## 0.4.4
+
+* `TwinPane.hiddenPane` with `TwinHiddenPane.dispose` (default), `keep` and the
+  new `keepOnceShown`: a pane is built only once it has been shown, then kept
+  with its state while hidden. `TwinListDetail` uses it, so an unopened detail
+  is no longer built on a phone.
+* `TwinPane.maintainHiddenPane` is deprecated; it means `TwinHiddenPane.keep`.
+
 ## 0.4.3
 
 * `TwinPane.isSplitOf(context)`: whether the nearest `TwinPane` above shows
