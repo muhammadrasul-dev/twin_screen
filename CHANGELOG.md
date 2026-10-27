@@ -1,3 +1,8 @@
+## 0.4.2
+
+* The iOS podspec version was stuck at 0.1.0; it now matches `pubspec.yaml`,
+  and a test keeps them in sync.
+
 ## 0.4.1
 
 * The iPhone Duo simulator preset now matches the real window: 871 × 669 pt on

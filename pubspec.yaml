@@ -1,6 +1,6 @@
 name: twin_screen
 description: "Fold-aware and dual-screen layouts for Flutter: iPhone Duo, Android foldables and flip phones, and web, plus window size classes and a fold simulator."
-version: 0.4.1
+version: 0.4.2
 repository: https://github.com/muhammadrasul-dev/twin_screen
 issue_tracker: https://github.com/muhammadrasul-dev/twin_screen/issues
 documentation: https://github.com/muhammadrasul-dev/twin_screen/tree/main/doc
