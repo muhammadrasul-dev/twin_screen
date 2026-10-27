@@ -96,3 +96,22 @@ sides on top.
 
 - [TwinPane](twin-pane.md)
 - [Screen state](screen-state.md)
+
+## Bottom sheets
+
+`showFoldAwareBottomSheet` applies the same rules to a modal bottom sheet. It
+takes `anchorPoint`, `preferredSide` and `allowSpanning`, plus the arguments of
+`showModalBottomSheet` (`isScrollControlled`, `showDragHandle`, `constraints`,
+`useSafeArea` and so on).
+
+```dart
+showFoldAwareBottomSheet<void>(
+  context: context,
+  anchorPoint: details.globalPosition,
+  builder: (context) => const SizedBox(height: 240, child: Center(child: Text('Share'))),
+);
+```
+
+The sheet rises from the bottom of its side. On a horizontal fold (tabletop),
+`TwinPaneSide.end` is the bottom half, so the sheet sits there. The scrim covers
+the whole screen. `FoldAwareBottomSheetRoute` is the route, for `Navigator.push`.

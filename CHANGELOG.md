@@ -1,3 +1,10 @@
+## 0.2.0
+
+* `showFoldAwareBottomSheet` and `FoldAwareBottomSheetRoute`: a modal bottom
+  sheet that rises on one side of the fold. Same placement rules as
+  `showFoldAwareDialog` (`anchorPoint`, `preferredSide`, `allowSpanning`) and
+  the same options as `showModalBottomSheet`.
+
 ## 0.1.0
 
 First release.

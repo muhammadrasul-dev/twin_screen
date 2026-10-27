@@ -54,7 +54,7 @@ phone.
   spanning a flat screen, held like a book, or standing like a laptop.
 - **It gives you layouts that respect the hinge.** `TwinPane` splits at the
   fold and never puts content under a physical hinge. `showFoldAwareDialog`
-  keeps dialogs on one side.
+  keeps dialogs and bottom sheets on one side.
 - **It lets you build without the hardware.** `TwinDebugOverlay` draws the
   fold over your app and simulates six real devices on any phone, emulator,
   desktop or browser.
@@ -138,6 +138,7 @@ walks through a complete list-detail screen.
 | Show two things on the two sides of the fold | `TwinPane(start:, end:)` |
 | Know whether `TwinPane` will split, to open details as a page otherwise | `TwinPaneRects.resolve(...).isSplit` |
 | Keep a dialog on one side of the fold | `showFoldAwareDialog(...)` |
+| Keep a bottom sheet on one side of the fold | `showFoldAwareBottomSheet(...)` |
 | Pick a layout for phones, tablets and desktops | `WindowClassBuilder` or `WindowClass.of(context)` |
 | Animate with the hinge angle | `TwinScreen.hingeAngleStreamOf(context)` |
 | Know if the device is a foldable at all | `TwinScreen.deviceTypeOf(context).isFoldable` |
@@ -249,6 +250,17 @@ GestureDetector(
 
 `FoldAwareDialog` applies the same placement to any widget, for custom routes
 and overlays.
+
+`showFoldAwareBottomSheet` is the same idea for bottom sheets. It takes the same
+placement options and the same arguments as `showModalBottomSheet`:
+
+```dart
+showFoldAwareBottomSheet<void>(
+  context: context,
+  anchorPoint: details.globalPosition,
+  builder: (context) => const SizedBox(height: 240, child: Center(child: Text('Share'))),
+);
+```
 
 Read more in the [fold-aware dialog guide](https://github.com/muhammadrasul-dev/twin_screen/blob/main/doc/fold-aware-dialog.md).
 
@@ -385,6 +397,7 @@ dialogs on the fold. Paste this into your `CLAUDE.md`, `AGENTS.md`,
 - Two sides of the fold: `TwinPane(start:, end:)`. Use start/end, not left/right.
   Never place content under the hinge.
 - Dialogs: `showFoldAwareDialog` instead of `showDialog`; pass the tap position as `anchorPoint`.
+- Bottom sheets: `showFoldAwareBottomSheet` instead of `showModalBottomSheet`.
 - Prefer narrow readers (`modeOf`, `postureOf`, `hingeOf`) over `TwinScreen.of(context)`.
   `hingeAngle` and `hinge` are nullable.
 - Tests: `TwinSimulatedScreen.resolve(preset:, posture:, hingeAngle:, orientation:, span:)`

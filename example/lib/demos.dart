@@ -40,6 +40,12 @@ class Demo {
       (_) => const DialogDemo(),
     ),
     Demo._(
+      'Fold-aware bottom sheet',
+      'Rises on one side of the fold',
+      Icons.vertical_align_top,
+      (_) => const BottomSheetDemo(),
+    ),
+    Demo._(
       'Window class',
       'compact / medium / expanded',
       Icons.aspect_ratio,
@@ -325,6 +331,71 @@ class DialogDemo extends StatelessWidget {
                 padding: EdgeInsets.all(20),
                 child: Text('Tap here: opens on this side (anchorPoint)'),
               ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        FilledButton.tonal(
+          onPressed: () => open(how: 'preferredSide: start'),
+          child: const Text('preferredSide: start'),
+        ),
+        const SizedBox(height: 8),
+        FilledButton.tonal(
+          onPressed: () =>
+              open(side: TwinPaneSide.end, how: 'preferredSide: end'),
+          child: const Text('preferredSide: end'),
+        ),
+        const SizedBox(height: 8),
+        FilledButton.tonal(
+          onPressed: () =>
+              open(spanning: true, how: 'allowSpanning: covers both sides'),
+          child: const Text('allowSpanning: true'),
+        ),
+      ],
+    );
+  }
+}
+
+/// Opens [showFoldAwareBottomSheet] in every placement mode.
+class BottomSheetDemo extends StatelessWidget {
+  /// Creates the demo.
+  const BottomSheetDemo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    Future<void> open({
+      Offset? anchor,
+      TwinPaneSide side = TwinPaneSide.start,
+      bool spanning = false,
+      required String how,
+    }) {
+      return showFoldAwareBottomSheet<void>(
+        context: context,
+        anchorPoint: anchor,
+        preferredSide: side,
+        allowSpanning: spanning,
+        showDragHandle: true,
+        builder: (BuildContext context) =>
+            SizedBox(height: 200, child: Center(child: Text(how))),
+      );
+    }
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: <Widget>[
+        const Text(
+          'On a spanned window the sheet stays on one side of the fold.',
+        ),
+        const SizedBox(height: 16),
+        GestureDetector(
+          onTapDown: (TapDownDetails details) => open(
+            anchor: details.globalPosition,
+            how: 'anchorPoint: the side you tapped',
+          ),
+          child: const Card(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Text('Tap here: rises on this side (anchorPoint)'),
             ),
           ),
         ),

@@ -8,7 +8,7 @@ read the guide for the feature you need.
 | [Getting started](getting-started.md) | Add the package and make your first screen fold-aware |
 | [Screen state](screen-state.md) | Understand `mode`, posture, hinge, segments and the data source, and read them efficiently |
 | [TwinPane](twin-pane.md) | Put two widgets on the two sides of the fold |
-| [Fold-aware dialog](fold-aware-dialog.md) | Keep dialogs off the hinge |
+| [Fold-aware dialog](fold-aware-dialog.md) | Keep dialogs and bottom sheets off the hinge |
 | [Window classes](window-classes.md) | Adapt to phones, tablets, desktops and unfolded foldables with one rule |
 | [Debug overlay and simulator](debug-overlay.md) | See the fold, and try every foldable without owning one |
 | [Platforms](platforms.md) | Know what each platform reports, set up emulators, and understand known quirks |
