@@ -268,4 +268,26 @@ void main() {
     );
     expect(rects.isSplit, isFalse);
   });
+
+  testWidgets('isSplitOf follows the layout from inside a pane', (WidgetTester tester) async {
+    bool? seen;
+    Widget probe() => Builder(
+      builder: (BuildContext context) {
+        seen = TwinPane.isSplitOf(context);
+        return const SizedBox.expand();
+      },
+    );
+    Widget pane() => Directionality(
+      textDirection: TextDirection.ltr,
+      child: TwinPane(start: probe(), end: const SizedBox.expand()),
+    );
+
+    await pumpPane(tester, size: const Size(400, 800), child: pane());
+    expect(seen, isFalse);
+
+    await pumpPane(tester, size: const Size(800, 600), platform: bookState(), child: pane());
+    expect(seen, isTrue);
+
+    expect(TwinPane.isSplitOf(tester.element(find.byType(TwinPane))), isFalse);
+  });
 }

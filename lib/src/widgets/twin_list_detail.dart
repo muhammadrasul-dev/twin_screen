@@ -61,8 +61,7 @@ class TwinListDetail extends StatelessWidget {
   ///
   /// Returns false when there is none. Registers a dependency, so the caller
   /// rebuilds when the answer changes.
-  static bool isSplitOf(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<_SplitScope>()?.isSplit ?? false;
+  static bool isSplitOf(BuildContext context) => TwinPane.isSplitOf(context);
 
   @override
   Widget build(BuildContext context) {
@@ -79,34 +78,22 @@ class TwinListDetail extends StatelessWidget {
         ).isSplit;
         final bool detailShown = !split && detail != null;
 
-        return _SplitScope(
-          isSplit: split,
-          child: PopScope(
-            canPop: !detailShown || onDetailClosed == null,
-            onPopInvokedWithResult: (bool didPop, Object? result) {
-              if (!didPop) onDetailClosed?.call();
-            },
-            child: TwinPane(
-              start: list,
-              end: detail ?? placeholder ?? const SizedBox.shrink(),
-              fallback: split
-                  ? TwinPaneFallback.sideBySide
-                  : (detailShown ? TwinPaneFallback.endOnly : TwinPaneFallback.startOnly),
-              fallbackRatio: listRatio,
-              maintainHiddenPane: true,
-            ),
+        return PopScope(
+          canPop: !detailShown || onDetailClosed == null,
+          onPopInvokedWithResult: (bool didPop, Object? result) {
+            if (!didPop) onDetailClosed?.call();
+          },
+          child: TwinPane(
+            start: list,
+            end: detail ?? placeholder ?? const SizedBox.shrink(),
+            fallback: split
+                ? TwinPaneFallback.sideBySide
+                : (detailShown ? TwinPaneFallback.endOnly : TwinPaneFallback.startOnly),
+            fallbackRatio: listRatio,
+            maintainHiddenPane: true,
           ),
         );
       },
     );
   }
-}
-
-class _SplitScope extends InheritedWidget {
-  const _SplitScope({required this.isSplit, required super.child});
-
-  final bool isSplit;
-
-  @override
-  bool updateShouldNotify(_SplitScope oldWidget) => isSplit != oldWidget.isSplit;
 }

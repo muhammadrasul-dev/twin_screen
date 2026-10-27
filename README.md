@@ -138,7 +138,8 @@ walks through a complete list-detail screen.
 |---|---|
 | Know how my app is shown right now (folded, open, half-open…) | `TwinScreen.modeOf(context)` |
 | Show two things on the two sides of the fold | `TwinPane(start:, end:)` |
-| Know whether `TwinPane` will split, to open details as a page otherwise | `TwinPaneRects.resolve(...).isSplit` |
+| Know, inside a pane, whether both panes are showing | `TwinPane.isSplitOf(context)` |
+| Know whether a layout will split, from outside it | `TwinPaneRects.resolve(...).isSplit` |
 | Build a list with a detail view that adapts to the fold | `TwinListDetail(list:, detail:)` |
 | Show a bottom bar, rail or extended rail to match the window and fold | `TwinNavigation(destinations:, body:)` |
 | Keep a dialog on one side of the fold | `showFoldAwareDialog(...)` |

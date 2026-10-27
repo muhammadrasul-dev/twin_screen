@@ -147,3 +147,24 @@ TwinPane(
 - [Screen state](screen-state.md): the `hinge` and `segments` that `TwinPane`
   uses.
 - [Fold-aware dialog](fold-aware-dialog.md): the same idea for dialogs.
+
+## Knowing whether it split
+
+Inside either pane, `TwinPane.isSplitOf(context)` returns true when both panes
+are showing. Use it to choose between selecting an item (the detail is already
+visible) and opening it as a page:
+
+```dart
+onTap: () {
+  if (TwinPane.isSplitOf(context)) {
+    setState(() => _selected = item);
+  } else {
+    Navigator.of(context).push(detailRoute(item));
+  }
+}
+```
+
+It uses the layout's own rules, so it cannot disagree with what is on screen,
+and it rebuilds the caller when the answer changes. From outside a `TwinPane`
+(a parent that has no pane above it), compute the rules yourself with
+`TwinPaneRects.resolve(...).isSplit`.

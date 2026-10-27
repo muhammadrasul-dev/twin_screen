@@ -49,38 +49,40 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final TwinScreenData screen = TwinScreen.of(context);
-    final bool split = TwinPaneRects.resolve(
-      region: Offset.zero & screen.size,
-      hinge: screen.hinge,
-      widthClass: screen.windowClass.width,
-    ).isSplit;
 
     return TwinPane(
-      start: Scaffold(
-        appBar: AppBar(title: const Text('twin_screen')),
-        body: ListView(
-          children: <Widget>[
-            ModeBanner(data: screen),
-            for (final Demo demo in Demo.all)
-              ListTile(
-                leading: Icon(demo.icon),
-                title: Text(demo.title),
-                subtitle: Text(demo.subtitle),
-                selected: split && demo == _selected,
-                onTap: () {
-                  if (split) {
-                    setState(() => _selected = demo);
-                  } else {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (BuildContext context) => DemoPage(demo: demo),
-                      ),
-                    );
-                  }
-                },
-              ),
-          ],
-        ),
+      // Inside a pane, TwinPane.isSplitOf follows the layout's own rules.
+      start: Builder(
+        builder: (BuildContext context) {
+          final bool split = TwinPane.isSplitOf(context);
+          return Scaffold(
+            appBar: AppBar(title: const Text('twin_screen')),
+            body: ListView(
+              children: <Widget>[
+                ModeBanner(data: screen),
+                for (final Demo demo in Demo.all)
+                  ListTile(
+                    leading: Icon(demo.icon),
+                    title: Text(demo.title),
+                    subtitle: Text(demo.subtitle),
+                    selected: split && demo == _selected,
+                    onTap: () {
+                      if (split) {
+                        setState(() => _selected = demo);
+                      } else {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (BuildContext context) =>
+                                DemoPage(demo: demo),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+              ],
+            ),
+          );
+        },
       ),
       end: DemoPage(
         key: ValueKey<Demo>(_selected),

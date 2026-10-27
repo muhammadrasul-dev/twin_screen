@@ -1,3 +1,9 @@
+## 0.4.3
+
+* `TwinPane.isSplitOf(context)`: whether the nearest `TwinPane` above shows
+  both panes, using the layout's own rules. `TwinListDetail.isSplitOf` now
+  delegates to it. The example app uses it instead of repeating the rules.
+
 ## 0.4.2
 
 * The iOS podspec version was stuck at 0.1.0; it now matches `pubspec.yaml`,

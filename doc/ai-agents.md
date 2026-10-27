@@ -183,7 +183,7 @@ Everything below comes from `package:twin_screen/twin_screen.dart`.
 | Fold geometry | `TwinHinge`: `bounds`, `axis`, `isSeparating`, `occludesContent`, `isPhysicalHinge` |
 | Usable areas | `TwinScreenData.segments`, `startSegment`, `endSegment`, `segmentFor(TwinPaneSide)` |
 | Two panes | `TwinPane({required start, required end, fallback = TwinPaneFallback.windowClass, fallbackRatio = 0.5})` |
-| Will it split? | `TwinPaneRects.resolve(region:, hinge:, widthClass:, ...)`, `.isSplit`, `.start`, `.end` |
+| Will it split? | Inside a pane: `TwinPane.isSplitOf(context)`. Outside: `TwinPaneRects.resolve(region:, hinge:, widthClass:, ...)`, `.isSplit`, `.start`, `.end` |
 | Fallbacks | `TwinPaneFallback { windowClass, startOnly, endOnly, sideBySide, stacked }` |
 | Dialog | `showFoldAwareDialog<T>({required context, required builder, anchorPoint, preferredSide = TwinPaneSide.start, allowSpanning = false, ...showDialog options})` |
 | Placement for custom routes | `FoldAwareDialog({required child, anchorPoint, preferredSide, allowSpanning})`, `FoldAwareDialogRoute` |

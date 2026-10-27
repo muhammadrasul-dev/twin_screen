@@ -72,6 +72,16 @@ class TwinPane extends StatelessWidget {
   /// Defaults to false: a hidden pane is disposed.
   final bool maintainHiddenPane;
 
+  /// Whether the nearest [TwinPane] above [context] shows both panes.
+  ///
+  /// Call it from inside a pane, for example to decide between selecting an
+  /// item (both panes visible) and opening it as a page (one pane). It uses the
+  /// same rules as the layout, so it cannot drift from it. Returns false when
+  /// there is no [TwinPane] above. Registers a dependency, so the caller
+  /// rebuilds when the answer changes.
+  static bool isSplitOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_PaneSplitScope>()?.isSplit ?? false;
+
   static const Key _startKey = ValueKey<String>('twin_pane.start');
   static const Key _endKey = ValueKey<String>('twin_pane.end');
 
@@ -90,13 +100,16 @@ class TwinPane extends StatelessWidget {
           textDirection: Directionality.maybeOf(context) ?? TextDirection.ltr,
         );
         final MediaQueryData? mediaQuery = MediaQuery.maybeOf(context);
-        return Stack(
-          children: <Widget>[
-            if (rects.start ?? (maintainHiddenPane ? region : null) case final Rect rect)
-              _pane(_startKey, rect, region, mediaQuery, start, hidden: rects.start == null),
-            if (rects.end ?? (maintainHiddenPane ? region : null) case final Rect rect)
-              _pane(_endKey, rect, region, mediaQuery, end, hidden: rects.end == null),
-          ],
+        return _PaneSplitScope(
+          isSplit: rects.isSplit,
+          child: Stack(
+            children: <Widget>[
+              if (rects.start ?? (maintainHiddenPane ? region : null) case final Rect rect)
+                _pane(_startKey, rect, region, mediaQuery, start, hidden: rects.start == null),
+              if (rects.end ?? (maintainHiddenPane ? region : null) case final Rect rect)
+                _pane(_endKey, rect, region, mediaQuery, end, hidden: rects.end == null),
+            ],
+          ),
         );
       },
     );
@@ -129,6 +142,15 @@ class TwinPane extends StatelessWidget {
     );
     return Positioned.fromRect(key: key, rect: rect.shift(-region.topLeft), child: pane);
   }
+}
+
+class _PaneSplitScope extends InheritedWidget {
+  const _PaneSplitScope({required this.isSplit, required super.child});
+
+  final bool isSplit;
+
+  @override
+  bool updateShouldNotify(_PaneSplitScope oldWidget) => isSplit != oldWidget.isSplit;
 }
 
 /// Where [TwinPane] puts its two panes, in the scope's coordinate space.

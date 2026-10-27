@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'twin_screen'
-  s.version          = '0.4.2'
+  s.version          = '0.4.3'
   s.summary          = 'Fold-aware and dual-screen layouts for Flutter: iPhone Duo, Android foldables and flip phones, web viewport segments, with window size classes, a fold-aware dialog and a debug fold simulator.'
   s.description      = <<-DESC
 Fold-aware and dual-screen layouts for Flutter: iPhone Duo, Android foldables and flip phones, web viewport segments, with window size classes, a fold-aware dialog and a debug fold simulator.
